@@ -4,15 +4,58 @@
   <meta charset="utf-8">
   
   
-  <title>Hexo</title>
+  <title>2.Authentication身份验证 | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://example.com/index.html">
+  <meta name="description" content="修订时间：2026.1.13 1.概念身份验证Authentication的关键在于确认用户是其声称的身份，区别于授权authorization确认用户是否被允许执行某个操作，例如，身份验证确定尝试使用用户名Carlos访问网站的人是否真的是创建该账户的人。一旦对Carlos进行了身份验证，他们的权限将决定他们被授权执行哪些操作。因此，身份验证漏洞可能允许攻击者访问敏感数据和功能，它们暴露了额外的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2.Authentication身份验证">
+<meta property="og:url" content="http://example.com/2026/01/12/Authentication%E8%BA%AB%E4%BB%BD%E9%AA%8C%E8%AF%81/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="修订时间：2026.1.13 1.概念身份验证Authentication的关键在于确认用户是其声称的身份，区别于授权authorization确认用户是否被允许执行某个操作，例如，身份验证确定尝试使用用户名Carlos访问网站的人是否真的是创建该账户的人。一旦对Carlos进行了身份验证，他们的权限将决定他们被授权执行哪些操作。因此，身份验证漏洞可能允许攻击者访问敏感数据和功能，它们暴露了额外的">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/images/image-20260111213249-e1e5qtj.png">
+<meta property="og:image" content="http://example.com/images/image-20251115175218-6pnqf55.png">
+<meta property="og:image" content="http://example.com/images/image-20251115182124-othyg0y.png">
+<meta property="og:image" content="http://example.com/images/image-20251115184721-kkvcgbj.png">
+<meta property="og:image" content="http://example.com/images/image-20251115193608-lybbuiv.png">
+<meta property="og:image" content="http://example.com/images/image-20251115193928-58dtuou.png">
+<meta property="og:image" content="http://example.com/images/image-20251116001552-rxy2f0d.png">
+<meta property="og:image" content="http://example.com/images/image-20251116002141-30623tz.png">
+<meta property="og:image" content="http://example.com/images/image-20251116154147-yc4kat6.png">
+<meta property="og:image" content="http://example.com/images/image-20251116154230-wyfa071.png">
+<meta property="og:image" content="http://example.com/images/image-20251116154346-b3s08a2.png">
+<meta property="og:image" content="http://example.com/images/image-20251116154641-xfd9bf9.png">
+<meta property="og:image" content="http://example.com/images/image-20251116155906-4rjz1yx.png">
+<meta property="og:image" content="http://example.com/images/image-20251116162000-yd018ep.png">
+<meta property="og:image" content="http://example.com/images/image-20251116162205-lvi35wl.png">
+<meta property="og:image" content="http://example.com/images/image-20251116165748-msmsk3b.png">
+<meta property="og:image" content="http://example.com/images/image-20251116165726-u1ybcds.png">
+<meta property="og:image" content="http://example.com/images/image-20251115125349-l268pwu.png">
+<meta property="og:image" content="http://example.com/images/image-20251115132119-fpvrynr.png">
+<meta property="og:image" content="http://example.com/images/image-20251115171506-5svg0ou.png">
+<meta property="og:image" content="http://example.com/images/image-20251115173125-ss5bg7t.png">
+<meta property="og:image" content="http://example.com/images/image-20251115173613-78szps8.png">
+<meta property="og:image" content="http://example.com/images/image-20251115185818-7j4772y.png">
+<meta property="og:image" content="http://example.com/images/image-20251115185915-x9ppfwg.png">
+<meta property="og:image" content="http://example.com/images/image-20251115190137-43jvi3e.png">
+<meta property="og:image" content="http://example.com/images/image-20251115190151-mrbu8dq.png">
+<meta property="og:image" content="http://example.com/images/image-20251115195210-nsjmt2c.png">
+<meta property="og:image" content="http://example.com/images/image-20251115195453-jhs9gl9.png">
+<meta property="og:image" content="http://example.com/images/image-20251115195527-dtwxdif.png">
+<meta property="og:image" content="http://example.com/images/image-20251115200747-ooqf5yi.png">
+<meta property="og:image" content="http://example.com/images/image-20251115201831-7j9gils.png">
+<meta property="og:image" content="http://example.com/images/image-20251115202005-x1u905l.png">
+<meta property="og:image" content="http://example.com/images/image-20251115202257-m1hnhli.png">
+<meta property="og:image" content="http://example.com/images/image-20251115220858-i7bd627.png">
+<meta property="og:image" content="http://example.com/images/image-20251116145936-ptopecr.png">
+<meta property="og:image" content="http://example.com/images/image-20251116150256-4292dx5.png">
+<meta property="og:image" content="http://example.com/images/image-20251116151923-b4xjyy3.png">
+<meta property="og:image" content="http://example.com/images/image-20251116152225-u58re5e.png">
+<meta property="article:published_time" content="2026-01-12T08:58:32.000Z">
+<meta property="article:modified_time" content="2026-01-12T17:10:14.593Z">
 <meta property="article:author" content="hr1sto">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/image-20260111213249-e1e5qtj.png">
   
     <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -69,9 +112,7 @@
 </header>
 
       <div class="outer">
-        <section id="main">
-  
-    <article id="post-Authentication身份验证" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+        <section id="main"><article id="post-Authentication身份验证" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2026/01/12/Authentication%E8%BA%AB%E4%BB%BD%E9%AA%8C%E8%AF%81/" class="article-date">
   <time class="dt-published" datetime="2026-01-12T08:58:32.000Z" itemprop="datePublished">2026-01-12</time>
@@ -88,8 +129,8 @@
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2026/01/12/Authentication%E8%BA%AB%E4%BB%BD%E9%AA%8C%E8%AF%81/">2.Authentication身份验证</a>
+    <h1 class="p-name article-title" itemprop="headline name">
+      2.Authentication身份验证
     </h1>
   
 
@@ -361,274 +402,19 @@
     </footer>
   </div>
   
-</article>
-
-
-
+    
+<nav id="article-nav">
   
-    <article id="post-路径遍历" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2026/01/08/%E8%B7%AF%E5%BE%84%E9%81%8D%E5%8E%86/" class="article-date">
-  <time class="dt-published" datetime="2026-01-07T19:41:15.000Z" itemprop="datePublished">2026-01-08</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/portswigger/">portswigger</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
   
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2026/01/08/%E8%B7%AF%E5%BE%84%E9%81%8D%E5%8E%86/">1.路径穿越</a>
-    </h1>
+    <a href="/2026/01/08/%E8%B7%AF%E5%BE%84%E9%81%8D%E5%8E%86/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">1.路径穿越</div>
+    </a>
   
+</nav>
 
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <p>修订时间：2025.12.7</p>
-<p>引用链接：<a target="_blank" rel="noopener" href="https://portswigger.net/web-security/file-path-traversal">https://portswigger.net/web-security/file-path-traversal</a></p>
-<p><a target="_blank" rel="noopener" href="https://hackerone.com/reports/3328367">https://hackerone.com/reports/3328367</a></p>
-<h1 id="1-概念"><a href="#1-概念" class="headerlink" title="1.概念"></a>1.概念</h1><p>漏洞原因：将用户提供的输入传递给文件系统API，如果无法避免将用户提供的输入传递给文件系统API，使用两层防御来防止攻击：<br>• 在处理用户输入之前先验证用户输入。理想情况下，将用户输入与允许的值白名单进行比较。如果不可能，请验证输入是否只包含允许的内容，例如仅限字母数字字符。<br>• 在验证提供的输入后，将输入追加到基本目录，并使用平台文件系统API对路径进行规范化。验证规范化路径是否以预期的基本目录开头。以下是基于用户输入验证文件规范化路径的一些简单Java代码示例：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">File</span> file = <span class="keyword">new</span> <span class="title class_">File</span>(<span class="variable constant_">BASE_DIRECTORY</span>, userInput);</span><br><span class="line"><span class="keyword">if</span> (file.<span class="title function_">getCanonicalPath</span>().<span class="title function_">startsWith</span>(<span class="variable constant_">BASE_DIRECTORY</span>)) &#123;</span><br><span class="line">    <span class="comment">// process file</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>以下为常见的路径遍历：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;img src=<span class="string">&quot;/loadImage?filename=218.png&quot;</span>&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>实际位置在<code>/var/www/images/218.png</code>穿越到&#x2F;etc&#x2F;passwd：  </p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://insecure-website.com/loadImage?filename=../../../etc/passwd</span><br></pre></td></tr></table></figure>
-
-<h1 id="2-利用路径遍历漏洞的常见障碍"><a href="#2-利用路径遍历漏洞的常见障碍" class="headerlink" title="2.利用路径遍历漏洞的常见障碍"></a>2.利用路径遍历漏洞的常见障碍</h1><p>如果一个应用程序从用户提供的文件名中剥离或阻止目录遍历序列，那么可能会使用多种技术来绕过防御措施。</p>
-<h2 id="2-1-嵌套遍历"><a href="#2-1-嵌套遍历" class="headerlink" title="2.1 嵌套遍历"></a>2.1 嵌套遍历</h2><p>嵌套遍历序列，例如….&#x2F;&#x2F;或…./。当剥离内部序列时，这些将恢复为简单的遍历序列。</p>
-<ol>
-<li><p><strong>应用层过滤的局限性</strong>很多程序会直接扫描输入中的 “..&#x2F;“ 字符串并替换为空，以此阻止路径遍历。&#x3D;&#x3D;但如果输入是嵌套形式，比如 “….&#x2F;&#x2F;“，简单的替换逻辑可能只处理掉一层。例如，将 “….&#x2F;&#x2F;“ 中的一个 “..&#x2F;“ 替换后，剩余的字符会重新组合成新的 “..&#x2F;“，从而绕过过滤。&#x3D;&#x3D;</p>
-</li>
-<li><p><strong>文件系统的路径规范化</strong>操作系统的文件系统在处理路径时，会自动进行 “规范化” 操作，也就是递归解析所有的 “..&#x2F;“ 和 “.&#x2F;“。无论输入的序列多么复杂，只要最终能组合成有效的上级目录跳转指令，文件系统都会执行。比如：</p>
-<ul>
-<li>“….&#x2F;&#x2F;“ 会被解析为 “..&#x2F;“ + “..&#x2F;“，即向上跳转两级。</li>
-<li>“….&#x2F;“ 可能被解析为 “..&#x2F;“ + “.&#x2F;“，即向上跳转一级。</li>
-</ul>
-</li>
-<li><p><strong>路径解析顺序的差异</strong>攻击的关键就在于利用 “应用层过滤” 和 “文件系统解析” 的顺序差。应用程序先过滤，但没过滤干净；文件系统后解析，把残留的字符组合成有效路径，最终实现了绕过。</p>
-</li>
-</ol>
-<h2 id="2-2-混用正斜杠和反斜杠"><a href="#2-2-混用正斜杠和反斜杠" class="headerlink" title="2.2 混用正斜杠和反斜杠"></a>2.2 混用正斜杠和反斜杠</h2><p><img src="/images/image-20251207121121-gb3pj8u.png" alt="image"></p>
-<p>利用反斜杠（\）与正斜杠（&#x2F;）的混用，绕过只检测正斜杠的过滤</p>
-<h2 id="2-3-双重URL编码"><a href="#2-3-双重URL编码" class="headerlink" title="2.3 双重URL编码"></a>2.3 双重URL编码</h2><p>对于Burp Suite Professional用户，Burp Intruder提供了预定义的负载列表Fuzzing - path traversal。它包含一些可以尝试的编码路径遍历序列。</p>
-<p>在某些情况下，如URL路径或multipart &#x2F; form-data请求的filename参数中，Web服务器可能会在将输入传递给应用程序之前剥离任何目录遍历序列。</p>
-<p>有时可以通过URL编码甚至双重URL编码来绕过这种清理，即..&#x2F;字符。这将分别导致%2e%2e%2f 和   %25%2e%25%2e%25%2f<br>各种非标准编码，如..%c0%af  或%8f，也可能有效。</p>
-<p>‍</p>
-<h3 id="2-3-1-c0-af-的原理："><a href="#2-3-1-c0-af-的原理：" class="headerlink" title="2.3.1 ..%c0%af 的原理："></a>2.3.1 ..%c0%af 的原理：</h3><p>在UTF-8编码中，&#x2F; 的标准编码是 2f (十六进制)。%c0%af 是UTF-8字符集中 非规范的（或称为”过长”） 编码方式来表示 &#x2F; 字符。</p>
-<p>清理机制阶段： 清理机制可能只识别并过滤标准编码的 %2f 或未编码的 &#x2F;。当它看到 %c0%af 时，因为这不是标准的 &#x2F; 编码形式，所以无法识别和拦截。</p>
-<p>应用程序阶段： 许多现代编程语言和操作系统在处理路径时，底层会调用 UTF-8 解码 函数。这些函数通常被设计为接受并规范化过长的UTF-8表示，因此会将非规范的 %c0%af 正确地解码 为 &#x2F; 字符。最终，输入被还原为 ..&#x2F;，绕过清理。</p>
-<h3 id="2-3-2-8f-的原理："><a href="#2-3-2-8f-的原理：" class="headerlink" title="2.3.2 %8f 的原理："></a>2.3.2 %8f 的原理：</h3><p> 这种形式通常是利用 IIS（Microsoft Internet Information Services） Web服务器的特定漏洞。在特定的IIS版本和配置中，IIS可能会将一些非标准的单字节或双字节编码（如 %8f、%e0 等，它们本身并不是合法的UTF-8表示）在处理路径时错误地映射或截断，最终导致 &#x2F; 字符的出现或路径解析错误。</p>
-<h2 id="2-4-文件开头"><a href="#2-4-文件开头" class="headerlink" title="2.4 文件开头"></a>2.4 文件开头</h2><p>应用程序可能要求用户提供的文件名以预期的基本文件夹开头，例如&#x2F;var&#x2F;www&#x2F;images在这种情况下，可能包括所需的基本文件夹，然后是合适的遍历序列。例如：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">filename=/var/www/images/../../../etc/passwd。</span><br></pre></td></tr></table></figure>
-
-<h2 id="2-5-空字节绕过"><a href="#2-5-空字节绕过" class="headerlink" title="2.5 空字节绕过"></a>2.5 空字节绕过</h2><p>应用程序可能要求用户提供的文件名以预期的文件扩展名结尾，例如.png。在这种情况下，可以使用空字节在所需扩展名之前有效地终止文件路径。例如：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">filename=../../../etc/passwd%00.png</span><br></pre></td></tr></table></figure>
-<p>‍</p>
-<h1 id="3-一些报告的思路"><a href="#3-一些报告的思路" class="headerlink" title="3.一些报告的思路"></a>3.一些报告的思路</h1><h2 id="3-1-CWE-28-Path-Traversal-‘-filedir"><a href="#3-1-CWE-28-Path-Traversal-‘-filedir" class="headerlink" title="3.1  CWE-28: Path Traversal: ‘..\filedir"></a>3.1  CWE-28: Path Traversal: ‘..\filedir</h2><p>Windows 操作系统或某些网络协议（如 SMB&#x2F;CIFS）的文件路径约定。</p>
-<ul>
-<li>假设应用程序旨在让用户访问日志目录下的文件，例如 <code>C:\App\Logs\</code>​。用户输入 <code>access.log</code>​。程序拼接后读取 <code>C:\App\Logs\access.log</code>。</li>
-<li><strong>攻击行为：</strong>  攻击者在用户输入中注入 Windows 风格的向上遍历序列：​ <strong>​<code>..\..\..\Windows\win.ini</code>​</strong>。</li>
-<li>结果： 应用程序将恶意输入与基路径拼接：\text{Full Path} &#x3D; \text{“C:\App\Logs&quot;} + \text{“......\Windows\win.ini”}</li>
-</ul>
-<p>‍</p>
-<h2 id="3-2-CWE-39-Path-Traversal-‘C-dirname’"><a href="#3-2-CWE-39-Path-Traversal-‘C-dirname’" class="headerlink" title="3.2 CWE-39: Path Traversal: ‘C:dirname’"></a>3.2 CWE-39: Path Traversal: ‘C:dirname’</h2><p><strong>利用了 Windows 操作系统处理路径中</strong>盘符（Drive Letter）的特殊机制来绕过安全检查。</p>
-<p>假设 Web 应用程序的安全文件根目录位于 <code>D:\WebRoot\data\</code>，并且它只想允许用户访问这个目录下的文件。</p>
-<p>攻击者构造一个包含另一个盘符（例如 <code>C:</code>）的输入：</p>
-<ul>
-<li><strong>攻击者输入：</strong>  <code>C:..\..\..\Windows\win.ini</code></li>
-</ul>
-<p>应用程序将用户输入与其他参数结合，并进行文件操作。如果它没有检查输入中的盘符：</p>
-<ul>
-<li><p><strong>应用程序当前工作目录 (CWD)：</strong>  假设应用程序进程的 CWD 正好在 <code>C:\Users\AppUser\</code>。</p>
-</li>
-<li><p><strong>输入解析：</strong>  当 Windows 看到 <code>C:..\..\..\Windows\win.ini</code> 时，它会将路径解释为：</p>
-<ol>
-<li>切换到 <code>C:</code> 盘。</li>
-<li>从 <code>C:</code>​ 盘的<strong>当前工作目录</strong> (<code>C:\Users\AppUser\</code>​) 开始，应用相对路径 <code>..\..\..\Windows\win.ini</code>。</li>
-</ol>
-</li>
-<li><p><strong>路径遍历：</strong></p>
-<ul>
-<li><code>..\</code>​ 跳出 <code>AppUser</code> $\rightarrow$ <code>C:\Users\</code></li>
-<li><code>..\</code>​ 跳出 <code>Users</code> $\rightarrow$ <code>C:\</code></li>
-<li><code>..\</code>​ 停在 <code>C:\</code></li>
-<li><strong>最终访问的路径：</strong>  <code>C:\Windows\win.ini</code></li>
-</ul>
-</li>
-</ul>
-<h2 id="3-3-CWE-40-Path-Traversal-‘-UNC-share-name-Windows-UNC-Share"><a href="#3-3-CWE-40-Path-Traversal-‘-UNC-share-name-Windows-UNC-Share" class="headerlink" title="3.3  CWE-40: Path Traversal: ‘\UNC\share\name&#39; (Windows UNC Share)"></a>3.3  CWE-40: Path Traversal: ‘\UNC\share\name&#39; (Windows UNC Share)</h2><p>UNC 共享是一种在 <strong>Windows 网络环境</strong>中指定共享资源（如文件、文件夹、打印机）位置的命名约定或格式。它是访问网络资源的<strong>标准语法</strong>。</p>
-<p>UNC 路径总是以两个反斜杠 <code>\\</code> 开头，后跟计算机名称，然后是共享资源的名称。</p>
-<table>
-<thead>
-<tr>
-<th><strong>组成部分</strong></th>
-<th><strong>示例</strong></th>
-<th><strong>说明</strong></th>
-<th></th>
-<th></th>
-<th></th>
-</tr>
-</thead>
-<tbody><tr>
-<td>​ <strong>​<code>\\</code>​</strong></td>
-<td>​<code>\\</code></td>
-<td>必需。表示这是一个 UNC 网络路径。</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>​<strong>​<code>ComputerName</code>​</strong></td>
-<td>​<code>\\ServerA</code></td>
-<td>托管资源的计算机或服务器的​<strong>网络名称</strong>​（NetBIOS Name）或​<strong>IP 地址</strong>。</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>​<strong>​<code>ShareName</code>​</strong></td>
-<td>​<code>\\ServerA\Projects</code></td>
-<td>计算机上<strong>已共享</strong>的文件夹或设备的名称。</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>​<strong>​<code>OptionalPath</code>​</strong></td>
-<td>​<code>\\ServerA\Projects\Report.docx</code></td>
-<td>共享文件夹内的文件或子文件夹的完整路径。</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-</tbody></table>
-<p>‍</p>
-<p>假设一个应用程序有一个名为“文件处理服务”的功能，它接收一个文件名，并预期在本地的临时目录中找到并处理该文件。</p>
-<p><strong>应用预期代码逻辑（假设在 Windows 服务器上）：</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">// 应用程序的本地临时目录</span><br><span class="line">TEMP_DIR = &quot;C:\App\Temp\&quot;</span><br><span class="line"></span><br><span class="line">// 接收用户输入的文件名</span><br><span class="line">user_input = get_param(&quot;filename&quot;) // 预期输入：data.tmp</span><br><span class="line"></span><br><span class="line">// 拼接路径</span><br><span class="line">full_path = TEMP_DIR + user_input  // 结果：C:\App\Temp\data.tmp</span><br><span class="line"></span><br><span class="line">// 对文件执行操作（如读取、写入、移动等）</span><br><span class="line">process_file(full_path) </span><br></pre></td></tr></table></figure>
-
-<p>‍</p>
-<p>由于应用程序只检查了本地路径的合法性，但未能检查输入是否以 <code>\\</code> 开头，攻击者可以注入一个完整的 UNC 路径。</p>
-<p>攻击者构造一个指向网络上另一台服务器共享资源的 UNC 路径。</p>
-<ul>
-<li><strong>攻击者输入</strong> <strong>​<code>filename</code>​</strong>​ <strong>参数：</strong>  <code>\\EvilServer\Share\sensitive.dat</code></li>
-</ul>
-<p>应用程序简单地将这个输入拼接到 <code>TEMP_DIR</code>​ 之后：\text{Full Path} &#x3D; \text{“C:\App\Temp&quot;} + \text{“\EvilServer\Share\sensitive.dat”}</p>
-<p>在 Windows 文件系统和 API 中，如果一个路径包含 ​<strong>两个连续的反斜杠</strong>  <strong>​<code>\\</code>​</strong> ​，操作系统会将其解释为​<strong>网络路径</strong>​，并尝试忽略其前面的本地路径部分（<code>C:\App\Temp\</code>）。</p>
-<ul>
-<li><strong>最终系统尝试访问的路径：</strong>  <code>\\EvilServer\Share\sensitive.dat</code></li>
-</ul>
-<p>‍</p>
-<h2 id="3-4-Path-traversal-via-archive-extract-CVE-2021-3281-incomplete-patch"><a href="#3-4-Path-traversal-via-archive-extract-CVE-2021-3281-incomplete-patch" class="headerlink" title="3.4 Path traversal via archive.extract - CVE 2021-3281 incomplete patch"></a>3.4 Path traversal via archive.extract - CVE 2021-3281 incomplete patch</h2><p>‍</p>
-<h3 id="1-漏洞核心：部分路径遍历-Partial-Path-Traversal"><a href="#1-漏洞核心：部分路径遍历-Partial-Path-Traversal" class="headerlink" title="1. 漏洞核心：部分路径遍历 (Partial Path Traversal)"></a>1. 漏洞核心：部分路径遍历 (Partial Path Traversal)</h3><ul>
-<li><p><strong>漏洞类型</strong>：路径遍历 (CWE-22)。具体来说，是“部分路径遍历”。</p>
-</li>
-<li><p><strong>受影响组件</strong>​：<code>django.utils.archive.extract</code>​ 函数（涉及 <code>ZipArchive</code>​ 和 <code>TarArchive</code> 类）。</p>
-</li>
-<li><p><strong>CVE 编号</strong>：CVE-2025-59682（注意：这是报告中提到的新编号，修复了旧 CVE-2021-3281 的遗留问题）。</p>
-</li>
-<li><p><strong>根本原因</strong>​： 在之前的修复中，Django 使用 <code>os.path.abspath</code>​ 和 <code>startswith</code> 来检查解压路径是否在目标目录内。 代码逻辑大致如下：<br>Python</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">target_path = os.path.abspath(to_path) # 例如 /var/lib</span><br><span class="line">filename = os.path.abspath(os.path.join(target_path, name)) # 例如 /var/library/test.txt</span><br><span class="line">if not filename.startswith(target_path): # 检查 /var/library/test.txt 是否以 /var/lib 开头</span><br><span class="line">    raise SuspiciousOperation(...)</span><br></pre></td></tr></table></figure>
-
-<p><strong>问题在于</strong>​：<code>os.path.abspath(&quot;/var/lib/&quot;)</code>​ 会移除末尾的斜杠，变成 <code>/var/lib</code>​。因此，如果攻击者构造一个文件名解压到 <code>/var/library/test.txt</code>​，因为 <code>/var/library</code>​ 确实以 <code>/var/lib</code>​ 字符开头，所以 <code>startswith</code>​ 检查会​<strong>通过</strong>​。这允许攻击者将文件写入到与目标目录名称相似的兄弟目录中（例如，目标是 <code>/home/john</code>​，攻击者可以写入 <code>/home/johnny</code>）。</p>
-</li>
-</ul>
-<h3 id="2-攻击场景与-PoC"><a href="#2-攻击场景与-PoC" class="headerlink" title="2. 攻击场景与 PoC"></a>2. 攻击场景与 PoC</h3><p>报告者 <code>stackered</code> 提供了一个非常清晰的 PoC：</p>
-<ol>
-<li><p><strong>场景假设</strong>​：假设系统中存在两个用户目录 <code>/home/john</code>​ (目标目录) 和 <code>/home/johnny</code> (攻击目标)。</p>
-</li>
-<li><p><strong>攻击构造</strong>：</p>
-<ul>
-<li>创建一个恶意 ZIP 文件。</li>
-<li>包含一个指向 <code>/home/johnny/.ssh/authorized_keys</code> 的文件条目。</li>
-<li>包含一个普通文件（用于绕过某些前置检查）。</li>
-</ul>
-</li>
-<li><p><strong>执行过程</strong>：</p>
-<ul>
-<li>调用 <code>archive.extract(&quot;/home/john&quot;)</code>。</li>
-<li>由于 <code>/home/johnny...</code>​ 以 <code>/home/john</code> 开头，防御逻辑失效。</li>
-<li>恶意文件被成功写入 <code>/home/johnny/.ssh/authorized_keys</code>​，可能导致 SSH 密钥注入，从而获取 <code>johnny</code> 用户的权限。</li>
-</ul>
-</li>
-</ol>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2026/01/08/%E8%B7%AF%E5%BE%84%E9%81%8D%E5%8E%86/" data-id="cmkbf3udx0003ewvscil8cmv4" data-title="1.路径穿越" class="article-share-link"><span class="fa fa-share">Share</span></a>
-      
-      
-      
-    </footer>
-  </div>
   
 </article>
-
-
-
-  
-    <article id="post-hello-world" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2026/01/05/hello-world/" class="article-date">
-  <time class="dt-published" datetime="2026-01-04T16:08:36.418Z" itemprop="datePublished">2026-01-05</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2026/01/05/hello-world/">Hello World</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2026/01/05/hello-world/" data-id="cmkbf3udu0001ewvs2btvctq1" data-title="Hello World" class="article-share-link"><span class="fa fa-share">Share</span></a>
-      
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
 
 
 </section>
