@@ -71,6 +71,227 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Business logic vulnerabilities" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/01/22/Business%20logic%20vulnerabilities/" class="article-date">
+  <time class="dt-published" datetime="2026-01-21T18:23:43.000Z" itemprop="datePublished">2026-01-22</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/portswigger/">portswigger</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2026/01/22/Business%20logic%20vulnerabilities/">4.Business logic vulnerabilities</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>修订时间：2026.1.22</p>
+<h1 id="1-概念"><a href="#1-概念" class="headerlink" title="1.概念"></a>1.概念</h1><p>业务逻辑漏洞是应用程序设计和实现中的缺陷，允许攻击者引发意外行为。</p>
+<p>逻辑错误通常对那些没有明确寻找它们的人来说是看不见的，因为它们通常不会通过应用程序的正常使用暴露出来。然而，攻击者可能能够通过以开发人员从未打算的方式与应用程序进行交互来利用。业务逻辑的主要目的之一是执行在设计应用程序或功能时定义的规则和约束。广义上讲，业务规则决定了应用程序在给定场景发生时应该如何反应。这包括防止用户做一些会对业务产生负面影响或根本没有任何意义的事情。</p>
+<p>基于逻辑的漏洞可能非常多样，并且通常对应用程序及其特定功能来说是唯一的。识别它们通常需要一定的人类知识，例如对业务领域或攻击者在给定环境中可能拥有的目标的理解。这使得它们很难使用自动化漏洞扫描程序来检测。因此，逻辑缺陷是漏洞赏金猎人和手动测试人员的一个很好的目标。</p>
+<h1 id="2-Excessive-trust-in-client-side-controls"><a href="#2-Excessive-trust-in-client-side-controls" class="headerlink" title="2.Excessive trust in client-side controls"></a>2.Excessive trust in client-side controls</h1><p>一个存在根本性缺陷的假设是，用户只会通过提供的Web界面与应用进行交互。</p>
+<p>这一点尤其危险，因为它会导致进一步的假设，即客户端验证将防止用户提供恶意输入。然而，攻击者可以简单地使用诸如Burp Proxy之类的工具，在数据由浏览器发送但尚未传递给服务器端逻辑之前篡改数据。</p>
+<p>这有效地使客户端控件变得无用。简单地按表面价值接受数据，而不执行适当的完整性检查和服务器端验证，可能会让攻击者以相对最小的努力造成各种破坏。他们能够实现的目标取决于功能以及可控数据正在做什么。在合适的背景下，这种漏洞可能会对业务相关功能和网站本身的安全性造成灾难性的后果。</p>
+<h1 id="3-Failing-to-handle-unconventional-input"><a href="#3-Failing-to-handle-unconventional-input" class="headerlink" title="3.Failing to handle unconventional input"></a>3.Failing to handle unconventional input</h1><p>应用逻辑的一个目的是将用户输入限制为遵守业务规则的数值。</p>
+<p>例如，应用程序可能会被设计为接受某种数据类型的任意值，但逻辑会从业务的角度确定这个值是否可接受。许多应用程序在其逻辑中加入了数值限制。</p>
+<p>例如，数值数据类型可能会接受负值,而业务逻辑不允许这样做。然而，如果应用程序没有执行适当的服务器端验证并拒绝此输入，攻击者可能会传入负值并引发不良行为。考虑两个银行账户之间的资金转账。此功能几乎肯定会检查发件人是否有足够的资金来完成转账：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$transferAmount</span> = <span class="variable">$_POST</span>[<span class="string">&#x27;amount&#x27;</span>];</span><br><span class="line"><span class="variable">$currentBalance</span> = <span class="variable">$user</span>-&gt;<span class="title function_ invoke__">getBalance</span>();</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (<span class="variable">$transferAmount</span> &lt;= <span class="variable">$currentBalance</span>) &#123;</span><br><span class="line">    <span class="comment">// Complete the transfer</span></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// Block the transfer: insufficient funds</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>‍</p>
+<p>在审计应用程序时，您应该使用诸如Burp Proxy和Repeater之类的工具尝试提交非常规值。特别是，尝试输入合法用户不太可能输入的范围内。这包括异常高或异常低的数字输入，以及基于文本的字段的异常长的字符串。您甚至可以尝试意外的数据类型。通过观察应用程序的响应，您应该尝试回答以下问题：</p>
+<ol>
+<li><p><strong>对数据有什么限制吗？</strong></p>
+</li>
+<li><p><strong>当你达到这些极限时会发生什么？</strong></p>
+</li>
+<li><p><strong>是否对您的输入执行了任何转换或规范化？</strong></p>
+</li>
+</ol>
+<p>这可能会暴露弱输入验证，使您能够以不寻常的方式操作应用程序。请记住，如果你在目标网站上发现一个表单不能安全地处理非常规输入，那么其他表单很可能也会有同样的问题。</p>
+<h1 id="4-Making-flawed-assumptions-about-user-behavior"><a href="#4-Making-flawed-assumptions-about-user-behavior" class="headerlink" title="4.Making flawed assumptions about user behavior"></a>4.Making flawed assumptions about user behavior</h1><p>逻辑漏洞最常见的根本原因之一是对用户行为做出有缺陷的假设。这可能会导致一系列问题，因为开发人员没有考虑到违反这些假设的潜在危险场景。在本节中，我们将提供一些应避免的常见假设的警示性示例，并演示它们如何导致危险的逻辑缺陷。</p>
+<h2 id="4-1-信任的用户并不总是保持值得信赖"><a href="#4-1-信任的用户并不总是保持值得信赖" class="headerlink" title="4.1 信任的用户并不总是保持值得信赖"></a>4.1 信任的用户并不总是保持值得信赖</h2><p>应用程序可能看起来是安全的，因为它们实施了看似强大的措施来执行业务规则。不幸的是，一些应用程序错误地假设，通过了这些严格的初始控制后，用户和他们的数据就可以被无限期地信任。这可能会导致从那时起对相同控制的执行相对宽松。如果业务规则和安全措施在整个应用程序中没有得到一致的应用，这可能会导致潜在的危险漏洞，攻击者可能会利用这些漏洞。</p>
+<p>这个实验室有缺陷的逻辑允许任意用户访问应该只对公司员工可用的管理功能。要解决实验室问题，请访问管理面板并删除用户carlos。</p>
+<p><img src="/images/image-20251122123124-r2f16pq.png" alt="image"></p>
+<h2 id="4-2-用户不会总是提供强制输入"><a href="#4-2-用户不会总是提供强制输入" class="headerlink" title="4.2 用户不会总是提供强制输入"></a>4.2 用户不会总是提供强制输入</h2><p>一个常见的误解是用户总会为必填的输入框提供值。浏览器可能会阻止普通用户在缺少必填输入的情况下提交表单，但正如我们所知，攻击者可以篡改传输中的参数。这甚至包括完全删除参数。在多个功能在同一服务器端脚本中实现的情况下，这是一个特别的问题。</p>
+<p>在这种情况下，某个参数的存在与否可能决定执行哪段代码。删除参数值可能允许攻击者访问本应无法触及的代码路径。</p>
+<p>在探测逻辑缺陷时，你应该尝试依次删除每个参数并观察这对响应产生的影响。你应该确保：</p>
+<p>• 每次只删除一个参数，以确保到达所有相关的代码路径。</p>
+<p>• 尝试删除参数名和参数值。服务器通常会区别处理这两种情况。</p>
+<p> • 完整地遵循多阶段流程。</p>
+<p>有时，在第一步篡改参数会对工作流中后续的步骤产生影响。 这既适用于URL参数也适用于POST参数，但也不要忘记检查cookie。这个简单的过程可以揭示一些可能可以被利用的奇怪的应用程序行为。</p>
+<p>这个实验基于用户的输入对用户的权限级别做了一个有缺陷的假设。因此，您可以利用其帐户管理功能的逻辑来访问任意用户的帐户。要解决实验室问题，请访问管理员帐户并删除用户carlos。您可以使用以下凭据登录自己的帐户：wiener:peter</p>
+<p><img src="/images/image-20251122124139-cx6qk81.png" alt="image"></p>
+<p><img src="/images/image-20251122124055-4yvo20r.png" alt="image"></p>
+<h2 id="4-3-用户并不总是遵循预期的顺序"><a href="#4-3-用户并不总是遵循预期的顺序" class="headerlink" title="4.3 用户并不总是遵循预期的顺序"></a>4.3 用户并不总是遵循预期的顺序</h2><p>许多交易依赖于由一系列步骤组成的预定义工作流。Web 界面通常会引导用户完成这个过程，每次他们完成当前步骤时，都会将他们带到工作流的下一步。</p>
+<p>然而，攻击者不一定遵守这个预期的顺序。没有考虑到这种可能性可能会导致相对容易利用的危险漏洞。</p>
+<p>例如，许多实施两步验证（2FA）的网站要求用户在一页上登录，然后在另一页上输入验证码。假设用户将始终遵循此过程并完成操作，因此不验证他们是否这样做，可能会使攻击者完全绕过 2FA 步骤。</p>
+<p>对事件顺序做出假设可能会导致广泛的问题，即使是在相同的工作流或功能内。使用像Burp Proxy和Repeater这样的工具，一旦攻击者看到了一个请求，他们就可以随意重放它，并使用强制浏览以他们想要的任何顺序与服务器进行任何交互。</p>
+<p>这允许他们在应用程序处于意外状态时完成不同的动作。为了识别这些种类的缺陷，你应该使用强制浏览以非预期的顺序提交请求。例如，你可能会跳过某些步骤，多次访问单个步骤，返回到早期的步骤，等等。注意不同步骤是如何访问的。虽然你经常只是向特定的URL提交一个GET或POST请求，但有时你可以通过向同一个URL提交不同的参数集来访问步骤。</p>
+<p>与所有的逻辑缺陷一样，尽量找出开发人员做出了什么假设，以及攻击面在哪里。然后你可以寻找违反这些假设的方法。请注意，这种测试通常会导致异常，因为预期的变量具有null或未初始化的值。到达部分定义或不一致状态的位置也可能会导致应用程序崩溃。在这种情况下，请务必注意你遇到的任何错误消息或调试信息。这些可能是有价值的信息披露来源，可以帮助你微调攻击并了解后端行为的关键细节。</p>
+<p>‍</p>
+<h1 id="5-Domain-specific-flaws"><a href="#5-Domain-specific-flaws" class="headerlink" title="5.Domain-specific flaws"></a>5.Domain-specific flaws</h1><p>在许多情况下，您将遇到特定于业务领域或网站目的的逻辑漏洞。<code>在线商店的折扣功能</code>是寻找逻辑漏洞时的经典攻击面。对于攻击者来说，这可能是一个潜在的金矿，因为在应用折扣的方式上会出现各种基本的逻辑漏洞。</p>
+<p>例如，考虑一个在线商店，该商店对超过1000美元的订单提供10%的折扣。如果业务逻辑未能检查折扣应用后订单是否被更改，那么这可能会容易被滥用。在这种情况下，攻击者可以简单地向购物车中添加商品，直到达到1000美元的阈值，然后在下单前删除他们不想要的商品。这样，即使订单不再满足预期条件，攻击者仍然可以享受折扣。</p>
+<p>您应该特别注意任何根据用户操作确定的标准调整价格或其他敏感值的情况。尝试了解应用程序使用什么算法进行这些调整，以及在什么时候进行这些调整。这通常涉及操纵应用程序，使其处于应用调整与开发者最初意图的标准不符的状态。为了识别这些漏洞，您需要仔细考虑攻击者可能有什么目的，并尝试找到使用所提供的功能实现这一目的的不同方法。这可能需要一定程度的特定领域知识，以便了解在给定情况下什么可能是有利的。</p>
+<ol>
+<li>不同优惠券能交替重复使用</li>
+<li>代金券可以买了之后折现，但是有可以优惠的折扣代码可以重复用，用宏的自动化实现</li>
+</ol>
+<p>‍</p>
+<h1 id="6-Providing-an-encryption-oracle"><a href="#6-Providing-an-encryption-oracle" class="headerlink" title="6.Providing an encryption oracle"></a>6.Providing an encryption oracle</h1><p>当用户可控制的输入被加密，并且生成的密文以某种方式提供给用户时，可能会出现危险的情况。这种输入有时被称为“加密预言机”。</p>
+<p>攻击者可以使用此输入使用正确的算法和非对称密钥加密任意数据。当应用程序中还有其他用户可控制的输入期望使用相同算法加密的数据时，这就会变得危险。</p>
+<p>在这种情况下，攻击者可能会使用加密预言机生成有效的加密输入，然后将其传递给其他敏感功能。如果站点上还有另一个提供反向功能的用户可控制输入，这个问题可能会变得更加严重。这将使攻击者能够解密其他数据以识别预期的结构。这为他们创建恶意数据节省了一些工作，但并不是成功利用所必需的。加密预言机的严重性取决于哪些功能也使用与预言机相同的算法。</p>
+<h1 id="7-Email-address-parser-discrepancies电子邮件地址解析器差异"><a href="#7-Email-address-parser-discrepancies电子邮件地址解析器差异" class="headerlink" title="7.Email address parser discrepancies电子邮件地址解析器差异"></a>7.Email address parser discrepancies电子邮件地址解析器差异</h1><p>一些网站会解析电子邮件地址以提取域名，并确定电子邮件所有者所属的组织。虽然这个过程最初看起来很简单，但实际上它非常复杂，即使对于有效的符合RFC标准的地址也是如此。</p>
+<p>电子邮件地址解析中的差异可能会破坏这种逻辑。这些差异出现在应用程序的不同部分以不同方式处理电子邮件地址时。攻击者可以使用编码技术来掩盖电子邮件地址的部分，从而利用这些差异。这使得攻击者能够创建通过初始验证检查的电子邮件地址，但被服务器的解析逻辑以不同的方式解释。</p>
+<p>电子邮件地址解析器差异的主要影响是未经授权的访问。攻击者可以使用来自受限域的看似有效的电子邮件地址注册账户。这使他们能够访问应用程序的敏感区域，例如管理面板或受限的用户功能。</p>
+<h1 id="LAB"><a href="#LAB" class="headerlink" title="LAB"></a>LAB</h1><h2 id="Lab-Excessive-trust-in-client-side-controls"><a href="#Lab-Excessive-trust-in-client-side-controls" class="headerlink" title="Lab: Excessive trust in client-side controls"></a>Lab: Excessive trust in client-side controls</h2><p>这个实验没有充分验证用户输入。您可以利用其购买工作流中的逻辑缺陷，以意想不到的价格购买物品。为了解决实验室的问题，买一件“轻便的133t皮夹克”。您可以使用以下凭据登录自己的帐户：wiener:peter</p>
+<p><img src="/images/image-20251120001315-i1zp13u.png" alt="image"></p>
+<p><img src="/images/image-20251120001318-p49zfjd.png" alt="image"></p>
+<p>‍</p>
+<h2 id="Lab-High-level-logic-vulnerability"><a href="#Lab-High-level-logic-vulnerability" class="headerlink" title="Lab: High-level logic vulnerability"></a>Lab: High-level logic vulnerability</h2><p>这个实验没有充分验证用户输入。您可以利用其购买工作流中的逻辑缺陷，以意想不到的价格购买物品。为了解决实验室的问题，买一件“轻便的133t皮夹克”。您可以使用以下凭据登录自己的帐户：wiener:peter</p>
+<p><img src="/images/image-20251120002417-rgt96gz.png" alt="image"></p>
+<p>‍</p>
+<p><img src="/images/image-20251120003235-0srlyf8.png" alt="image"></p>
+<p>‍</p>
+<h2 id="Lab-Inconsistent-handling-of-exceptional-input"><a href="#Lab-Inconsistent-handling-of-exceptional-input" class="headerlink" title="Lab: Inconsistent handling of exceptional input"></a>Lab: Inconsistent handling of exceptional input</h2><p>这个实验没有充分验证用户输入。您可以利用其帐户注册过程中的逻辑缺陷来访问管理功能。要解决实验室问题，请访问管理面板并删除用户carlos。</p>
+<p>你可以使用实验室横幅中的链接来访问连接到你自己私有邮件服务器的电子邮件客户端。该客户端将显示发送到@YOUR-EMAIL-ID.web-security-academy.net 和任何任意子域的所有消息。你的唯一电子邮件 ID 将显示在电子邮件客户端中。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> random</span><br><span class="line"><span class="keyword">import</span> string</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">generate_random_strings</span>(<span class="params">count, length, use_punctuation=<span class="literal">False</span></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    生成指定数量和长度的随机字符串。</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    <span class="comment"># 定义字符集：大小写字母 + 数字</span></span><br><span class="line">    chars = string.ascii_letters + string.digits</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 如果需要特殊符号，取消下面注释或将参数设为 True</span></span><br><span class="line">    <span class="keyword">if</span> use_punctuation:</span><br><span class="line">        chars += string.punctuation</span><br><span class="line"></span><br><span class="line">    generated_list = []</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(count):</span><br><span class="line">        <span class="comment"># random.choices 在 Python 3.6+ 中可用，效率较高</span></span><br><span class="line">        rand_str = <span class="string">&#x27;&#x27;</span>.join(random.choices(chars, k=length))</span><br><span class="line">        generated_list.append(rand_str)</span><br><span class="line">        </span><br><span class="line">    <span class="keyword">return</span> generated_list</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">main</span>():</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;--- 随机字符串生成器 ---&quot;</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            <span class="comment"># 获取用户输入</span></span><br><span class="line">            count_input = <span class="built_in">input</span>(<span class="string">&quot;请输入要生成的字符串数量 (输入 q 退出): &quot;</span>)</span><br><span class="line">            <span class="keyword">if</span> count_input.lower() == <span class="string">&#x27;q&#x27;</span>:</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">                </span><br><span class="line">            count = <span class="built_in">int</span>(count_input)</span><br><span class="line">            length = <span class="built_in">int</span>(<span class="built_in">input</span>(<span class="string">&quot;请输入每个字符串的长度: &quot;</span>))</span><br><span class="line">            </span><br><span class="line">            <span class="keyword">if</span> count &lt;= <span class="number">0</span> <span class="keyword">or</span> length &lt;= <span class="number">0</span>:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">&quot;错误：数量和长度必须大于 0。&quot;</span>)</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">            <span class="comment"># 询问是否包含特殊字符</span></span><br><span class="line">            special_char_input = <span class="built_in">input</span>(<span class="string">&quot;包含特殊符号吗? (y/n): &quot;</span>)</span><br><span class="line">            use_special = special_char_input.lower() == <span class="string">&#x27;y&#x27;</span></span><br><span class="line"></span><br><span class="line">            <span class="comment"># 生成并打印</span></span><br><span class="line">            results = generate_random_strings(count, length, use_special)</span><br><span class="line">            </span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;\n成功生成 <span class="subst">&#123;count&#125;</span> 个长度为 <span class="subst">&#123;length&#125;</span> 的字符串：&quot;</span>)</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;-&quot;</span> * <span class="number">30</span>)</span><br><span class="line">            <span class="keyword">for</span> i, s <span class="keyword">in</span> <span class="built_in">enumerate</span>(results, <span class="number">1</span>):</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;i&#125;</span>: <span class="subst">&#123;s&#125;</span>&quot;</span>)</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;-&quot;</span> * <span class="number">30</span> + <span class="string">&quot;\n&quot;</span>)</span><br><span class="line">            </span><br><span class="line">        <span class="keyword">except</span> ValueError:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;输入错误：请输入有效的整数。\n&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+
+<p>在通过 Burp 代理流量时，打开实验室并转到“目标”&gt;“站点地图”标签页。右键点击实验室域并选择“参与工具”&gt;“发现内容”以打开内容发现工具。</p>
+<p><img src="/images/image-20251121173927-36ri82w.png" alt="image"><br>2. 单击“会话未运行”以开始内容发现。短时间内，查看对话框中的“站点地图”标签页。请注意，它发现了 &#x2F;admin 路径。<br>3. 尝试浏览到 &#x2F;admin。尽管您没有访问权限，但错误消息表明 DontWannaCry 用户可以。</p>
+<p><img src="/images/image-20251121174845-zu4fn8z.png" alt="image"></p>
+<p><img src="/images/image-20251121174909-j8pydq2.png" alt="image"><br>4. 转到帐户注册页面。请注意，通知 DontWannaCry 员工使用其公司电子邮件地址的消息。</p>
+<ol start="5">
+<li>通过实验室横幅中的按钮，打开电子邮件客户端。记下您的电子邮件服务器域名中的唯一 ID（@YOUR-EMAIL-ID.web-security-academy.net）。</li>
+</ol>
+<p><img src="/images/image-20251121175131-29kf15w.png" alt="image"><a href="mailto:&#97;&#x74;&#x74;&#x61;&#99;&#x6b;&#101;&#x72;&#64;&#101;&#x78;&#112;&#108;&#111;&#105;&#116;&#x2d;&#48;&#x61;&#x34;&#x32;&#x30;&#48;&#x37;&#x65;&#x30;&#51;&#49;&#x37;&#97;&#53;&#102;&#56;&#x38;&#49;&#102;&#50;&#x62;&#x66;&#57;&#51;&#x30;&#49;&#x65;&#x35;&#48;&#x30;&#x62;&#102;&#x2e;&#x65;&#120;&#112;&#108;&#x6f;&#x69;&#116;&#x2d;&#x73;&#101;&#114;&#118;&#x65;&#114;&#46;&#x6e;&#101;&#x74;">&#97;&#x74;&#x74;&#x61;&#99;&#x6b;&#101;&#x72;&#64;&#101;&#x78;&#112;&#108;&#111;&#105;&#116;&#x2d;&#48;&#x61;&#x34;&#x32;&#x30;&#48;&#x37;&#x65;&#x30;&#51;&#49;&#x37;&#97;&#53;&#102;&#56;&#x38;&#49;&#102;&#50;&#x62;&#x66;&#57;&#51;&#x30;&#49;&#x65;&#x35;&#48;&#x30;&#x62;&#102;&#x2e;&#x65;&#120;&#112;&#108;&#x6f;&#x69;&#116;&#x2d;&#x73;&#101;&#114;&#118;&#x65;&#114;&#46;&#x6e;&#101;&#x74;</a></p>
+<p>‍</p>
+<ol start="6">
+<li>返回实验室并使用以下格式的异常长的电子邮件地址进行注册：<a href="mailto:&#118;&#x65;&#114;&#x79;&#45;&#108;&#111;&#x6e;&#x67;&#x2d;&#x73;&#116;&#114;&#x69;&#x6e;&#x67;&#x40;&#89;&#79;&#85;&#82;&#45;&#x45;&#77;&#x41;&#73;&#76;&#45;&#73;&#x44;&#x2e;&#x77;&#x65;&#98;&#45;&#115;&#x65;&#99;&#x75;&#114;&#x69;&#116;&#121;&#x2d;&#97;&#x63;&#x61;&#x64;&#x65;&#x6d;&#x79;&#x2e;&#x6e;&#x65;&#116;">&#118;&#x65;&#114;&#x79;&#45;&#108;&#111;&#x6e;&#x67;&#x2d;&#x73;&#116;&#114;&#x69;&#x6e;&#x67;&#x40;&#89;&#79;&#85;&#82;&#45;&#x45;&#77;&#x41;&#73;&#76;&#45;&#73;&#x44;&#x2e;&#x77;&#x65;&#98;&#45;&#115;&#x65;&#99;&#x75;&#114;&#x69;&#116;&#121;&#x2d;&#97;&#x63;&#x61;&#x64;&#x65;&#x6d;&#x79;&#x2e;&#x6e;&#x65;&#116;</a>, very-long-string 应至少 200 个字符长。</li>
+</ol>
+<p><img src="/images/image-20251122114304-kv6ew3j.png" alt="image"></p>
+<p><img src="/images/image-20251122114249-94xcbvd.png" alt="image"></p>
+<ol>
+<li>转到电子邮件客户端并注意到您已收到一封确认电子邮件。单击链接以完成注册过程。</li>
+<li>登录并转到“我的帐户”页面。请注意，您的电子邮件地址已被截断为 255 个字符。</li>
+<li>注销并返回到帐户注册页面。</li>
+<li>使用另一个长电子邮件地址注册一个新帐户，但这次在您的电子邮件地址中包含 dontwannacry.com 作为子域，</li>
+</ol>
+<p>格式如下：<a href="mailto:&#x76;&#101;&#x72;&#121;&#x2d;&#x6c;&#x6f;&#x6e;&#x67;&#45;&#115;&#x74;&#x72;&#x69;&#x6e;&#x67;&#64;&#x64;&#x6f;&#110;&#x74;&#x77;&#97;&#x6e;&#x6e;&#97;&#99;&#x72;&#x79;&#x2e;&#x63;&#x6f;&#x6d;&#46;&#x59;&#x4f;&#85;&#x52;&#x2d;&#69;&#77;&#65;&#73;&#x4c;&#x2d;&#x49;&#x44;&#46;&#x77;&#x65;&#x62;&#x2d;&#x73;&#x65;&#x63;&#117;&#114;&#x69;&#x74;&#121;&#x2d;&#97;&#x63;&#x61;&#100;&#x65;&#x6d;&#121;&#46;&#x6e;&#x65;&#x74;">&#x76;&#101;&#x72;&#121;&#x2d;&#x6c;&#x6f;&#x6e;&#x67;&#45;&#115;&#x74;&#x72;&#x69;&#x6e;&#x67;&#64;&#x64;&#x6f;&#110;&#x74;&#x77;&#97;&#x6e;&#x6e;&#97;&#99;&#x72;&#x79;&#x2e;&#x63;&#x6f;&#x6d;&#46;&#x59;&#x4f;&#85;&#x52;&#x2d;&#69;&#77;&#65;&#73;&#x4c;&#x2d;&#x49;&#x44;&#46;&#x77;&#x65;&#x62;&#x2d;&#x73;&#x65;&#x63;&#117;&#114;&#x69;&#x74;&#121;&#x2d;&#97;&#x63;&#x61;&#100;&#x65;&#x6d;&#121;&#46;&#x6e;&#x65;&#x74;</a></p>
+<p>确保 very-long-string 的字符数正确，以便 @dontwannacry.com 结尾的“m”恰好是第 255 个字符。<br>11. 转到电子邮件客户端并单击您收到的确认电子邮件中的链接。登录到您的新帐户并注意到您现在可以访问管理面板。确认电子邮件已成功发送到您的电子邮件客户端，但应用程序服务器将您帐户关联的地址截断为 255 个字符。因此，您已经能够使用看起来有效的 @dontwannacry.com 地址进行注册。您可以从“我的帐户”页面确认这一点。<br>12. 转到管理面板并删除 carlos 以解决实验室问题。</p>
+<p>‍</p>
+<p>‍</p>
+<h2 id="Lab-Authentication-bypass-via-flawed-state-machine"><a href="#Lab-Authentication-bypass-via-flawed-state-machine" class="headerlink" title="Lab: Authentication bypass via flawed state machine"></a>Lab: Authentication bypass via flawed state machine</h2><p>本实验对登录过程中的事件顺序做出了有缺陷的假设。为了解决这个问题，利用这个漏洞绕过实验室的身份验证，访问管理界面，并删除用户carlos。您可以使用以下凭据登录自己的帐户：wiener:peter</p>
+<p><img src="/images/image-20251122175751-x21bz7x.png" alt="image"></p>
+<p><img src="/images/image-20251122175827-709i9z8.png" alt="image"></p>
+<p><img src="/images/image-20251122180415-0dbvi6i.png" alt="image"></p>
+<p>‍</p>
+<h2 id="Lab-Infinite-money-logic-flaw"><a href="#Lab-Infinite-money-logic-flaw" class="headerlink" title="Lab: Infinite money logic flaw"></a>Lab: Infinite money logic flaw</h2><p>礼品卡是原值的，优惠码是可以每单都用的，相当于花九块钱刷十块钱</p>
+<p>‍</p>
+<p>‍</p>
+<p>这个实验室的采购流程存在逻辑缺陷。为了解决实验室的问题，利用这个漏洞买了一件“轻量级的133t皮夹克”。您可以使用以下凭据登录自己的帐户：wiener:peter</p>
+<p><img src="/images/image-20251122184234-z7xre4u.png" alt="image"></p>
+<p><img src="/images/image-20251122205801-e7ob5m6.png" alt="image"></p>
+<ol>
+<li>在运行 Burp 的情况下，登录并注册新闻通讯以获取优惠券代码 SIGNUP30。请注意，您可以购买 10 美元的礼品卡，并从“我的账户”页面兑换。</li>
+<li>将礼品卡添加到您的购物篮中，然后继续结账。应用优惠券代码以获得 30% 的折扣。完成订单并将礼品卡代码复制到剪贴板。</li>
+<li>转到您的账户页面并兑换礼品卡。请注意，整个过程为您的商店积分增加了 3 美元。现在您需要尝试自动化这个过程。</li>
+<li>研究代理历史记录，并注意到您通过在 POST &#x2F;gift-card 请求的 gift-card 参数中提供代码来兑换礼品卡。</li>
+<li>单击顶部工具栏中的“设置”。设置对话框打开。单击会话。在“会话处理规则”面板中，单击“添加”。“会话处理规则”编辑器对话框打开。在对话框中，转到“范围”选项卡。在 URL 范围下，选择“包括所有 URL”。返回到“详细信息”选项卡。在“规则操作”下，单击“添加”&gt;“运行宏”。在“选择宏”下，再次单击“添加”以打开“宏记录器”。</li>
+</ol>
+<p>‍</p>
+<ol start="6">
+<li>选择以下请求序列：POST &#x2F;cart、POST &#x2F;cart&#x2F;coupon、POST &#x2F;cart&#x2F;checkout、GET &#x2F;cart&#x2F;order-confirmation?order-confirmed&#x3D;true、POST &#x2F;gift-card，然后点击“确定”。这样，宏编辑器就会打开。</li>
+<li>在请求列表中，选择 GET &#x2F;cart&#x2F;order-confirmation?order-confirmed&#x3D;true，然后点击“配置项目”。在打开的对话框中，点击“添加”以创建自定义参数。将参数命名为 gift-card，并突出显示响应底部的礼品卡代码。两次点击“确定”返回到宏编辑器。</li>
+</ol>
+<p><img src="/images/image-20251122193605-v1mqwm7.png" alt="image"></p>
+<p><img src="/images/image-20251122193546-x96jdv4.png" alt="image"></p>
+<p><img src="/images/image-20251122205736-llzimoc.png" alt="image"></p>
+<ol>
+<li>选择 POST &#x2F;gift-card 请求，再次点击“配置项目”。在“参数处理”部分，使用下拉菜单指定 gift-card 参数应从先前的响应（响应 4）中派生。点击“确定”。<br>在宏编辑器中，点击“测试宏”。查看对 GET &#x2F;cart&#x2F;order-confirmation?order-confirmed&#x3D;true 的响应，并注意生成的礼品卡代码。查看 POST &#x2F;gift-card 请求。确保 gift-card 参数匹配，并确认它收到了 302 响应。一直点击“确定”直到返回到 Burp 的主窗口。</li>
+<li>将 GET &#x2F;my-account 请求发送到 Burp Intruder。确保选择了“狙击手攻击”。<br>在“有效负载”侧边栏的“有效负载配置”下，选择有效负载类型“空有效负载”。选择生成 412 个有效负载。<br>单击 Resource pool 打开 Resource pool 侧边栏。将攻击添加到资源池，并将“最大并发请求”设置为 1。启动攻击。<br>攻击完成后，您将拥有足够的商店积分来购买夹克并解决实验室问题。</li>
+</ol>
+<p>‍</p>
+<p>‍</p>
+<h2 id="Lab-Authentication-bypass-via-encryption-oracle（比较有意思）"><a href="#Lab-Authentication-bypass-via-encryption-oracle（比较有意思）" class="headerlink" title="Lab: Authentication bypass via encryption oracle（比较有意思）"></a>Lab: Authentication bypass via encryption oracle（比较有意思）</h2><p>这个实验包含一个逻辑缺陷，将加密oracle暴露给用户。要解决实验室问题，可以利用此漏洞访问管理面板并删除用户carlos。您可以使用以下凭据登录自己的帐户：</p>
+<p>wiener:peter</p>
+<ol>
+<li>启用“保持登录”选项登录，并发表一条评论。使用 Burp 的手动测试工具研究相应的请求和响应。观察到保持登录的 cookie 是加密的。</li>
+<li>注意，当您尝试使用无效的电子邮件地址提交评论时，响应会在重定向您到博客文章之前设置一个加密的通知 cookie。</li>
+</ol>
+<p><img src="/images/image-20251122235931-gb6uf93.png" alt="image"></p>
+<p><img src="/images/image-20251122235920-5z9z3f5.png" alt="image"></p>
+<ol>
+<li>注意，错误消息以明文形式反映了电子邮件参数中的输入：无效的电子邮件地址：your-invalid-email 推断这必须是从通知 cookie 解密的。将 POST &#x2F;post&#x2F;comment 和随后的 GET &#x2F;post?postId&#x3D;x 请求（含通知 cookie）发送到 Burp 重发器。</li>
+<li>在重发器中，观察到您可以使用 POST 请求的电子邮件参数来加密任意数据，并在 Set-Cookie 标头中反映相应的密文。同样，您可以在 GET 请求中使用通知 cookie 来解密任意密文，并在错误消息中反映输出。为简单起见，双击每个请求的选项卡，并将选项卡分别重命名为加密和解密。</li>
+</ol>
+<p><img src="/images/image-20251123000501-ewwhmqg.png" alt="image"></p>
+<ol>
+<li>在解密请求中，复制您的stay-logged-in cookie并将其粘贴到通知cookie中。发送请求。响应现在包含解密的stay-logged-in cookie，例如：wiener:1598530205184，而不是错误消息。这揭示了cookie应该是username:timestamp格式。将时间戳复制到剪贴板。</li>
+</ol>
+<p><img src="/images/image-20251123000753-r86swpc.png" alt="image"></p>
+<p><img src="/images/image-20251123000826-c742acy.png" alt="image"></p>
+<p>‍</p>
+<ol>
+<li><p>转到加密请求，将电子邮件参数更改为管理员：your-timestamp。发送请求，然后从响应中复制新的通知cookie。</p>
+</li>
+<li><p>解密这个新的cookie，并观察到任何您使用电子邮件参数传递的值都会自动添加23个字符的“无效电子邮件地址：”前缀。将通知cookie发送到Burp解码器。</p>
+</li>
+<li><p>在解码器中，对cookie进行URL解码和Base64解码。</p>
+</li>
+<li><p>在Burp Repeater中，切换到消息编辑器的“Hex”标签页。选择前23个字节，然后右键选择“删除所选字节”。重新编码数据并将其复制到解密请求的通知cookie中。发送请求时，会观察到一条错误消息，指出使用了基于块的加密算法，并且输入长度必须是16的倍数。您需要使用足够的字节填充“无效电子邮件地址:”前缀，以便您将要删除的字节数是16的倍数。（cbc+base64编码不会影响字节的大小）</p>
+<p><img src="/images/image-20251123001649-ynshv64.png" alt="image"></p>
+</li>
+<li><p>在Burp Repeater中，返回到加密请求，并在预期的cookie值开头添加9个字符，例如：xxxxxxxxx管理员:你的时间戳。加密此输入，并使用解密请求测试它是否可以成功解密。将新的密文发送到解码器，然后进行URL和Base64解码。这次，从数据开头删除32个字节。</p>
+</li>
+</ol>
+<p><img src="/images/image-20251123002352-jocid0k.png" alt="image"></p>
+<ol>
+<li><p>重新编码数据并将其粘贴到解密请求的通知参数中。检查响应以确认您的输入已成功解密，最重要的是，不再包含“无效电子邮件地址:”前缀。您应该只看到管理员:你的时间戳。从代理历史记录中，将GET &#x2F;请求发送到Burp Repeater。完全删除会话cookie，用您自制的cookie的密文替换stay-logged-in cookie。发送请求。</p>
+<p><img src="/images/image-20251123002559-xvki1x2.png" alt="image"></p>
+</li>
+<li><p>观察您现在已作为管理员登录并可以访问管理面板。使用Burp Repeater，浏览到&#x2F;admin并注意删除用户的选项。浏览到&#x2F;admin&#x2F;delete?username&#x3D;carlos以解决实验室。</p>
+</li>
+</ol>
+<h2 id="Lab-Bypassing-access-controls-using-email-address-parsing-discrepancies（原文还不是很懂）"><a href="#Lab-Bypassing-access-controls-using-email-address-parsing-discrepancies（原文还不是很懂）" class="headerlink" title="Lab: Bypassing access controls using email address parsing discrepancies（原文还不是很懂）"></a>Lab: Bypassing access controls using email address parsing discrepancies（原文还不是很懂）</h2><p><a target="_blank" rel="noopener" href="https://portswigger.net/research/splitting-the-email-atom">https://portswigger.net/research/splitting-the-email-atom</a></p>
+<p>本实验室验证电子邮件地址，以防止攻击者从未经授权的域名注册地址。在用于解析电子邮件地址的验证逻辑和库中存在解析器差异。要解决实验室的问题，利用这个漏洞注册一个帐户并删除卡洛斯。</p>
+<p>要解决这个实验，您需要了解PortSwigger研究团队的Gareth Heyes在拆分电子邮件原子：利用解析器绕过访问控制白皮书中描述的技术。</p>
+<h3 id="识别注册限制"><a href="#识别注册限制" class="headerlink" title="识别注册限制"></a>识别注册限制</h3><p>打开实验室并点击注册。<br>尝试使用电子邮件地址<a href="mailto:&#102;&#111;&#x6f;&#x40;&#101;&#120;&#112;&#x6c;&#111;&#105;&#116;&#45;&#x73;&#101;&#114;&#x76;&#x65;&#x72;&#x2e;&#x6e;&#101;&#116;">&#102;&#111;&#x6f;&#x40;&#101;&#120;&#112;&#x6c;&#111;&#105;&#116;&#45;&#x73;&#101;&#114;&#x76;&#x65;&#x72;&#x2e;&#x6e;&#101;&#116;</a>注册一个账户。<br>注意到应用程序阻止了请求，并显示一条错误消息，指出电子邮件域必须是ginandjuice.shop。这表明服务器在注册期间执行域检查。</p>
+<h3 id="研究编码差异"><a href="#研究编码差异" class="headerlink" title="研究编码差异"></a>研究编码差异</h3><p>尝试使用以下电子邮件注册账户：</p>
+<p>​<code>=?iso-8859-1?q?=61=62=63?=foo@ginandjuice.shop</code></p>
+<p>这是电子邮件<a href="mailto:&#97;&#98;&#99;&#x66;&#111;&#111;&#x40;&#103;&#x69;&#x6e;&#x61;&#x6e;&#100;&#x6a;&#117;&#105;&#99;&#101;&#x2e;&#115;&#x68;&#x6f;&#112;">&#97;&#98;&#99;&#x66;&#111;&#111;&#x40;&#103;&#x69;&#x6e;&#x61;&#x6e;&#100;&#x6a;&#117;&#105;&#99;&#101;&#x2e;&#115;&#x68;&#x6f;&#112;</a>，其中abc部分使用Q编码进行编码，这是“编码字”标准的一部分。<br>请注意，注册被以下错误阻止：“出于安全原因，注册被阻止。”<br>尝试使用以下UTF-8编码的电子邮件注册账户：</p>
+<p>​<code>=?utf-8?q?=61=62=63?=foo@ginandjuice.shop</code><br>请注意，注册被相同的错误消息阻止。这表明服务器正在检测并拒绝尝试使用编码字编码来操纵注册电子邮件。服务器的验证可能无法检测到不太常见的编码格式。<br>尝试使用以下UTF-7编码的电子邮件注册账户：</p>
+<p>​#&#x3D;?utf-7?q?&amp;AGEAYgBj-?&#x3D;<a href="mailto:&#102;&#111;&#111;&#64;&#103;&#105;&#x6e;&#x61;&#x6e;&#100;&#106;&#x75;&#x69;&#x63;&#101;&#46;&#x73;&#104;&#111;&#112;">&#102;&#111;&#111;&#64;&#103;&#105;&#x6e;&#x61;&#x6e;&#100;&#106;&#x75;&#x69;&#x63;&#101;&#46;&#x73;&#104;&#111;&#112;</a>#<br>请注意，此尝试不会触发错误。这表明服务器没有将UTF-7编码识别为安全威胁。因为UTF-7编码似乎绕过了服务器的验证，因此您可能能够使用它来制作一个攻击，使服务器在仍然满足ginandjuice.shop域要求的同时，将确认电子邮件发送到您的攻击服务器电子邮件地址。</p>
+<h3 id="Exploit-the-vulnerability-using-UTF-7"><a href="#Exploit-the-vulnerability-using-UTF-7" class="headerlink" title="Exploit the vulnerability using UTF-7"></a>Exploit the vulnerability using UTF-7</h3><p>使用以下UTF-7编码的电子邮件注册一个帐户：</p>
+<p>&#x3D;&#x3D;&#x3D;?utf-7?q?attacker&amp;AEA-exploit-0a2100c2030563578019b63c0164003b.exploit-server.net&amp;ACA-?&#x3D;@ginandjuice.shop&#x3D;&#x3D;</p>
+<p>这是字符串attacker@[YOUR-EXPLOIT-SERVER-ID]?&#x3D;@ginandjuice.shop，其中@符号和空格已使用UTF-7编码。<br>2. 单击“电子邮件客户端”。请注意，您已经收到了一封注册验证电子邮件。这是因为编码的电子邮件地址已经通过了验证，因为末尾有@ginandjuice.shop部分，但电子邮件服务器已经将注册电子邮件解释为attacker@[YOUR-EXPLOIT-SERVER-ID]。<br>3. 单击确认链接以激活帐户。</p>
+<h2 id=""><a href="#" class="headerlink" title=""></a></h2>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2026/01/22/Business%20logic%20vulnerabilities/" data-id="cmkottz0z0000r0vs1kol4q2c" data-title="4.Business logic vulnerabilities" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-Server-side request forgery (SSRF)" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2026/01/19/Server-side%20request%20forgery%20(SSRF)/" class="article-date">
@@ -897,6 +1118,10 @@
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2026/01/22/Business%20logic%20vulnerabilities/">4.Business logic vulnerabilities</a>
+          </li>
         
           <li>
             <a href="/2026/01/19/Server-side%20request%20forgery%20(SSRF)/">3.Server-side request forgery (SSRF)</a>
