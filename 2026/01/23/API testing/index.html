@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>5.API testing | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="修订时间：2026.1.23 API（应用程序编程接口）使软件系统和应用程序能够进行通信和共享数据。 所有动态网站都由API组成，因此经典的Web漏洞（如SQL注入）可以归类为API测试。 在这个主题中，我们将教你如何测试网站前端没有完全使用的API，重点是RESTful和JSON API。 我们还将教你如何测试可能影响内部API的服务器端参数污染漏洞。 1.API recon(明确端点——交互)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="5.API testing">
+<meta property="og:url" content="http://example.com/2026/01/23/API%20testing/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="修订时间：2026.1.23 API（应用程序编程接口）使软件系统和应用程序能够进行通信和共享数据。 所有动态网站都由API组成，因此经典的Web漏洞（如SQL注入）可以归类为API测试。 在这个主题中，我们将教你如何测试网站前端没有完全使用的API，重点是RESTful和JSON API。 我们还将教你如何测试可能影响内部API的服务器端参数污染漏洞。 1.API recon(明确端点——交互)">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/images/image-20251123131557-aor40oy.png">
+<meta property="og:image" content="http://example.com/images/image-20251123131701-acoqkdd.png">
+<meta property="og:image" content="http://example.com/images/image-20251123132102-lpt82ks.png">
+<meta property="og:image" content="http://example.com/images/image-20251123132240-nyofjd0.png">
+<meta property="og:image" content="http://example.com/images/image-20251123135004-phubkvl.png">
+<meta property="og:image" content="http://example.com/images/image-20251123135046-5latj9i.png">
+<meta property="og:image" content="http://example.com/images/image-20251123170344-xucg0ny.png">
+<meta property="og:image" content="http://example.com/images/image-20251123170401-l96g7hk.png">
+<meta property="og:image" content="http://example.com/images/image-20251123170643-acclji1.png">
+<meta property="og:image" content="http://example.com/images/image-20251123170834-u7y5ia5.png">
+<meta property="og:image" content="http://example.com/images/image-20251123170939-jl0w5kj.png">
+<meta property="article:published_time" content="2026-01-23T00:25:47.000Z">
+<meta property="article:modified_time" content="2026-01-23T08:26:34.247Z">
+<meta property="article:author" content="hr1sto">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/image-20251123131557-aor40oy.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.2.0/css/fork-awesome.min.css">
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-API testing" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/01/23/API%20testing/" class="article-date">
+  <time class="dt-published" datetime="2026-01-23T00:25:47.000Z" itemprop="datePublished">2026-01-23</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/portswigger/">portswigger</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      5.API testing
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>修订时间：2026.1.23</p>
+<p>API（应用程序编程接口）使软件系统和应用程序能够进行通信和共享数据。</p>
+<p>所有动态网站都由API组成，因此经典的Web漏洞（如SQL注入）可以归类为API测试。</p>
+<p>在这个主题中，我们将教你如何测试网站前端没有完全使用的API，重点是RESTful和JSON API。</p>
+<p>我们还将教你如何测试可能影响内部API的服务器端参数污染漏洞。</p>
+<h1 id="1-API-recon-明确端点——交互"><a href="#1-API-recon-明确端点——交互" class="headerlink" title="1.API recon(明确端点——交互)"></a>1.API recon(明确端点——交互)</h1><p>要开始进行API测试，您首先需要尽可能多地了解有关API的信息，以发现其攻击面。首先，您应该确定API端点。这些是API在其服务器上接收有关特定资源的请求的位置。例如，考虑以下GET请求：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">GET</span> <span class="string">/api/books</span> <span class="string">HTTP/1.1</span></span><br><span class="line"><span class="attr">Host:</span> <span class="string">example.com</span></span><br></pre></td></tr></table></figure>
+
+<p>这个请求的API端点是&#x2F;api&#x2F;books。这将导致与API的交互，以从图书馆检索书籍列表。另一个API端点可能是，例如，&#x2F;api&#x2F;books&#x2F;mystery，它将检索神秘书籍的列表。一旦确定了端点，就需要确定如何与它们进行交互。这使您能够构建有效的HTTP请求以测试API。例如，您应该找出以下信息：<br>• API处理的输入数据，包括必填和可选参数。<br>• API接受的请求类型，包括支持的HTTP方法和媒体格式。<br>• 速率限制和身份验证机制。</p>
+<h1 id="2-API-documentation"><a href="#2-API-documentation" class="headerlink" title="2.API documentation"></a>2.API documentation</h1><p>API 通常会有文档记录，以便开发者了解如何使用和整合它们。文档可以是人类可读或机器可读的格式。人类可读的文档旨在让开发者了解如何使用 API。它可能包含详细的解释、示例和使用场景。</p>
+<p>机器可读的文档旨在被软件处理，以自动化 API 整合和验证等任务。</p>
+<p>它以 JSON 或 XML 等结构化格式编写。API 文档通常是对外公开的，特别是如果 API 是供外部开发者使用时。如果是这样的话，请始终从查看文档开始进行侦察。</p>
+<h2 id="2-1-Discovering-API-documentation"><a href="#2-1-Discovering-API-documentation" class="headerlink" title="2.1 Discovering API documentation()"></a>2.1 Discovering API documentation()</h2><p>即使API文档不是公开可用的，您仍然可以通过浏览使用该API的应用程序来访问它。为此，您可以使用Burp Scanner来抓取API。您也可以使用Burp的浏览器手动浏览应用程序。查找可能引用API文档的端点，例如：</p>
+<ul>
+<li>​<code>/api</code></li>
+<li>​<code>/swagger/index.html</code></li>
+<li>​<code>/openapi.json</code></li>
+</ul>
+<p>如果您为资源确定了端点，请确保调查基本路径。例如，如果您确定了资源端点&#x2F;api&#x2F;swagger&#x2F;v1&#x2F;users&#x2F;123，那么您应该调查以下路径：</p>
+<ul>
+<li>​<code>/api/swagger/v1</code></li>
+<li>​<code>/api/swagger</code></li>
+<li>​<code>/api</code></li>
+</ul>
+<h2 id="2-2-使用机器可读的文档"><a href="#2-2-使用机器可读的文档" class="headerlink" title="2.2 使用机器可读的文档"></a>2.2 使用机器可读的文档</h2><p>您可以使用一系列自动化工具来分析找到的任何机器可读的API文档。您可以使用Burp Scanner抓取和审计OpenAPI文档，或JSON或YAML格式的任何其他文档。您还可以使用OpenAPI Parser BApp解析OpenAPI文档。您还可以使用专门的工具来测试记录的端点，例如Postman或SoapUI。</p>
+<h1 id="3-Identifying-API-endpoints（scanner和js文件）"><a href="#3-Identifying-API-endpoints（scanner和js文件）" class="headerlink" title="3.Identifying API endpoints（scanner和js文件）"></a>3.Identifying API endpoints（scanner和js文件）</h1><p>通过浏览使用API的应用程序，您还可以收集大量信息。即使您可以访问API文档，这也通常值得一做，因为有时文档可能不准确或过时。您可以使用Burp Scanner爬取应用程序，然后使用Burp的浏览器手动调查有趣的攻击面。在浏览应用程序时，寻找URL结构中暗示API端点的模式，例如&#x2F;api&#x2F;。同时还要注意JavaScript文件。这些文件可能包含您尚未通过Web浏览器直接触发的API端点的引用。</p>
+<h2 id="3-1-Interacting-with-API-endpoints"><a href="#3-1-Interacting-with-API-endpoints" class="headerlink" title="3.1 Interacting with API endpoints"></a>3.1 Interacting with API endpoints</h2><p>一旦确定了API端点，就使用Burp Repeater和Burp Intruder与它们进行交互。这使您能够观察API的行为并发现额外的攻击面。例如，您可以调查API如何响应更改HTTP方法和媒体类型。在与API端点进行交互时，请仔细查看错误消息和其他响应。有时，这些信息中包含可用于构造有效HTTP请求的内容。</p>
+<h2 id="3-2-Identifying-supported-HTTP-methods"><a href="#3-2-Identifying-supported-HTTP-methods" class="headerlink" title="3.2 Identifying supported HTTP methods"></a>3.2 Identifying supported HTTP methods</h2><p>HTTP方法指定了对资源执行的操作。例如：</p>
+<ul>
+<li>GET - 从资源中检索数据。</li>
+<li>PATCH - 对资源应用部分更改。</li>
+<li>OPTIONS - 检索有关可以在资源上使用的请求方法类型的信息。</li>
+</ul>
+<p>‍</p>
+<p>API端点可能支持不同的HTTP方法。因此，在调查API端点时，测试所有潜在的方法非常重要。这可能会使您能够识别其他端点功能，从而打开更多的攻击面。例如，端点&#x2F;api&#x2F;tasks可以支持以下方法：</p>
+<ul>
+<li>GET &#x2F;api&#x2F;tasks - 检索任务列表。</li>
+<li>POST &#x2F;api&#x2F;tasks - 创建一个新任务。</li>
+<li>DELETE &#x2F;api&#x2F;tasks&#x2F;1 - 删除任务。</li>
+</ul>
+<p>您可以使用Burp Intruder中<strong>内置的HTTP动词列表</strong>自动循环遍历一系列方法。在测试不同的HTTP方法时，要以低优先级对象为目标。这有助于确保您避免意外的后果，例如更改关键项或创建过多的记录。</p>
+<h2 id="3-3-Identifying-supported-content-types"><a href="#3-3-Identifying-supported-content-types" class="headerlink" title="3.3 Identifying supported content types"></a>3.3 Identifying supported content types</h2><p>API 端点通常期望数据采用特定格式。因此，它们可能会根据请求中提供的数据内容类型表现出不同的行为。更改内容类型可能会使您能够：<br>• 触发披露有用信息的错误。<br>• 绕过有缺陷的防御。<br>• 利用处理逻辑的差异。<br>例如，处理 JSON 数据时 API 可能是安全的，但在处理 XML 时则容易受到注入攻击。<br>要更改内容类型，请修改 Content-Type 标头，然后相应地重新格式化请求正文。您可以使用“<a target="_blank" rel="noopener" href="https://portswigger.net/bappstore/db57ecbe2cb7446292a94aa6181c9278">Content type converter</a>”BApp 自动转换请求中提交的数据在 XML 和 JSON 之间的格式。</p>
+<h3 id="3-4-Using-Intruder-to-find-hidden-endpoints"><a href="#3-4-Using-Intruder-to-find-hidden-endpoints" class="headerlink" title="3.4 Using Intruder to find hidden endpoints"></a>3.4 Using Intruder to find hidden endpoints</h3><p>一旦您确定了一些初始的API端点，您可以使用Intruder来揭露隐藏的端点。例如，考虑这样一种情况：您已经确定了以下用于更新用户信息的API端点：PUT &#x2F;api&#x2F;user&#x2F;update</p>
+<p>为了确定隐藏的端点，您可以使用Burp Intruder来查找具有相同结构的其他资源。例如，您可以在路径的&#x2F;update位置添加一个有效负载，其中包含其他常见功能的列表，例如delete和add。在寻找隐藏的端点时，请使用基于常见API命名约定和行业术语的词表。确保您还根据您的初步侦察包括与应用相关的术语。</p>
+<h1 id="4-Finding-hidden-parameters"><a href="#4-Finding-hidden-parameters" class="headerlink" title="4.Finding hidden parameters"></a>4.Finding hidden parameters</h1><p>在进行API侦察时，您可能会发现API支持的一些未记录参数。您可以尝试使用这些参数来更改应用程序的行为。Burp包含许多可以帮助您识别隐藏参数的工具：<br>• Burp Intruder允许您使用常见参数名称的单词表自动发现隐藏参数，以替换现有参数或添加新参数。确保您还根据初始侦察包含与应用相关的名称。<br>• <a target="_blank" rel="noopener" href="https://portswigger.net/bappstore/17d2949a985c4b7ca092728dba871943">Param miner</a>  BApp允许您每个请求自动猜测多达65,536个参数名称。参数矿工根据从范围中获取的信息自动猜测与应用相关的名称。<br>• <a target="_blank" rel="noopener" href="https://portswigger.net/burp/documentation/desktop/tools/engagement-tools/content-discovery">Content discovery</a>工具使您能够发现与您可以浏览到的可见内容没有链接的内容，包括参数。</p>
+<h2 id="4-1-Mass-assignment-vulnerabilities"><a href="#4-1-Mass-assignment-vulnerabilities" class="headerlink" title="4.1 Mass assignment vulnerabilities"></a>4.1 Mass assignment vulnerabilities</h2><p>批量赋值（也称为自动绑定）可能会无意中创建隐藏的参数。这发生在软件框架自动将请求参数绑定到内部对象的字段上时。因此，批量赋值可能会导致应用程序支持开发人员从未打算处理的参数。</p>
+<h3 id="4-1-1-Identifying-hidden-parameters"><a href="#4-1-1-Identifying-hidden-parameters" class="headerlink" title="4.1.1 Identifying hidden parameters"></a>4.1.1 Identifying hidden parameters</h3><p>因为批量赋值会从对象字段中创建参数，所以您通常可以通过手动检查 API 返回的对象来识别这些隐藏参数。例如，考虑一个 PATCH &#x2F;api&#x2F;users&#x2F; 请求，它允许用户更新他们的用户名和电子邮件，并包含以下 JSON:</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;username&quot;</span><span class="punctuation">:</span> <span class="string">&quot;wiener&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;email&quot;</span><span class="punctuation">:</span> <span class="string">&quot;wiener@example.com&quot;</span><span class="punctuation">,</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>一个并发GET &#x2F;api&#x2F;users&#x2F;123请求返回如下JSON：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;id&quot;</span><span class="punctuation">:</span> <span class="number">123</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;John Doe&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;email&quot;</span><span class="punctuation">:</span> <span class="string">&quot;john@example.com&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;isAdmin&quot;</span><span class="punctuation">:</span> <span class="string">&quot;false&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>这可能表明隐藏的id和isAdmin参数与更新的用户名和电子邮件参数一起绑定到内部用户对象。</p>
+<h3 id="4-1-2-Testing-mass-assignment-vulnerabilities"><a href="#4-1-2-Testing-mass-assignment-vulnerabilities" class="headerlink" title="4.1.2 Testing mass assignment vulnerabilities"></a>4.1.2 Testing mass assignment vulnerabilities</h3><p>为了测试您是否可以修改枚举的isAdmin参数值，请将其添加到PATCH请求中：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;username&quot;</span><span class="punctuation">:</span> <span class="string">&quot;wiener&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;email&quot;</span><span class="punctuation">:</span> <span class="string">&quot;wiener@example.com&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;isAdmin&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>另外，发送一个带有无效isAdmin参数值的PATCH请求：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;username&quot;</span><span class="punctuation">:</span> <span class="string">&quot;wiener&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;email&quot;</span><span class="punctuation">:</span> <span class="string">&quot;wiener@example.com&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;isAdmin&quot;</span><span class="punctuation">:</span> <span class="string">&quot;foo&quot;</span><span class="punctuation">,</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>如果应用程序的行为不同，这可能表明无效值会影响查询逻辑，而有效值则不会。这可能表明参数可以被用户成功更新。然后，您可以发送一个PATCH请求，将isAdmin参数值设置为true，以尝试利用该漏洞：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;username&quot;</span><span class="punctuation">:</span> <span class="string">&quot;wiener&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;email&quot;</span><span class="punctuation">:</span> <span class="string">&quot;wiener@example.com&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;isAdmin&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">,</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>如果请求中的isAdmin值没有经过充分的验证和处理就绑定到用户对象，则可能会错误地授予用户管理员权限。</p>
+<p>‍</p>
+<h1 id="5-Server-side-parameter-pollution"><a href="#5-Server-side-parameter-pollution" class="headerlink" title="5.Server-side parameter pollution"></a>5.Server-side parameter pollution</h1><p>服务器端参数污染漏洞是指当一个网站在向内部API发送服务器端请求时，将用户输入嵌入其中而没有进行适当的编码时发生的情况。</p>
+<p>这意味着攻击者可能能够操纵或注入参数，从而例如：</p>
+<p>覆盖现有参数、修改应用程序行为、访问未经授权的数据。</p>
+<p>您可以测试任何用户输入的任何类型的参数污染。例如，查询参数、表单字段、标头和URL路径参数都可能容易受到攻击。</p>
+<h2 id="5-1-Testing-for-server-side-parameter-pollution-in-the-query-string"><a href="#5-1-Testing-for-server-side-parameter-pollution-in-the-query-string" class="headerlink" title="5.1 Testing for server-side parameter pollution in the query string"></a>5.1 Testing for server-side parameter pollution in the query string</h2><p>要测试服务器端查询字符串中的参数污染漏洞，请在输入中加入查询语法字符（如#、&amp;和&#x3D;），并观察应用程序的响应。<br>假设存在一个存在漏洞的应用程序，允许用户根据用户名搜索其他用户。当搜索用户时，浏览器会发送以下请求：<br>​<code>GET /userSearch?name=peter&amp;back=/home</code>​<br>为获取用户信息，服务器会向内部API发送如下请求：<br>​<code>GET /users/search?name=peter&amp;publicProfile=true</code></p>
+<p>‍</p>
+<h3 id="5-1-1-截断-23"><a href="#5-1-1-截断-23" class="headerlink" title="5.1.1 截断#%23"></a>5.1.1 截断#%23</h3><p>必须对#字符进行URL编码。否则前端应用程序会将其解释为片段标识符，导致该参数无法传递至内部API。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">您可以使用URL编码的#字符尝试截断服务器端请求。为帮助您解析响应，还可以在#字符后添加字符串。</span></span><br><span class="line"><span class="string">例如，可将查询字符串修改为：</span></span><br><span class="line"><span class="string">GET</span> <span class="string">/userSearch?name=peter%23foo&amp;back=/home</span></span><br><span class="line"><span class="string">此时前端将尝试访问以下URL：</span></span><br><span class="line"><span class="string">GET</span> <span class="string">/users/search?name=peter#foo&amp;publicProfile=true</span></span><br></pre></td></tr></table></figure>
+
+<p>检查响应内容以判断查询是否被截断。例如，若响应返回用户名 peter，则服务器端查询可能已被截断。若返回无效名称错误信息，则应用程序可能将 foo 视为用户名的一部分。这表明服务器端请求可能未被截断。<br>若能截断服务器端请求，则无需强制设置publicProfilefield为true。此漏洞可被利用以获取非公开用户资料。</p>
+<h3 id="5-1-2-注入-26"><a href="#5-1-2-注入-26" class="headerlink" title="5.1.2 注入&amp;%26"></a>5.1.2 注入&amp;%26</h3><p>您可以使用URL编码的&amp;字符尝试在服务器端请求中添加第二个参数。<br>例如，可将查询字符串修改为：<br>​<code>GET /userSearch?name=peter%26foo=xyz&amp;back=/home</code>​<br>这将导致服务器端向内部API发送以下请求：<br>​<code>GET /users/search?name=peter&amp;foo=xyz&amp;publicProfile=true</code><br>通过响应内容可推断附加参数的解析方式。例如，若响应内容未改变，可能表明参数成功注入但被应用程序忽略。<br>若您能够修改查询字符串，则可尝试在服务器端请求中添加第二个有效参数。</p>
+<p>例如，若已识别出电子邮件参数，可按以下方式将其添加至查询字符串：<br>​<code>GET /userSearch?name=peter&amp;email=foo&amp;back=/home</code>​<br>这将导致服务器端向内部API发出如下请求：<br>​<code>GET /users/search?name=peter&amp;email=foo&amp;publicProfile=true</code><br>请通过响应内容分析附加参数的解析方式。</p>
+<h3 id="5-1-3-并覆盖存在参数"><a href="#5-1-3-并覆盖存在参数" class="headerlink" title="5.1.3 并覆盖存在参数"></a>5.1.3 并覆盖存在参数</h3><p>要确认应用程序是否存在服务器端参数污染漏洞，可尝试覆盖原始参数。具体操作是注入第二个同名参数。<br>例如，可将查询字符串修改为：<br>GET &#x2F;userSearch?name&#x3D;peter%26name&#x3D;carlos&amp;back&#x3D;&#x2F;home<br>这将导致服务器向内部API发送如下请求：<br>GET &#x2F;users&#x2F;search?name&#x3D;peter&amp;name&#x3D;carlos&amp;publicProfile&#x3D;true<br>内部API将解析两个name参数。实际影响取决于应用程序对第二个参数的处理方式，不同Web技术存在差异：<br>• PHP仅解析最后一个参数，将执行carlos用户搜索<br>• ASP.NET合并两个参数，将执行peter,carlos用户搜索，可能触发”用户名无效”错误<br>• Node.js&#x2F;express 仅解析首个参数。这将导致用户搜索 peter，结果保持不变。<br>若能覆盖原始参数，则可能实现漏洞利用。例如在请求中添加 name&#x3D;administrator，这可能使您以管理员身份登录。</p>
+<h2 id="5-2-Testing-for-server-side-parameter-pollution-in-REST-paths"><a href="#5-2-Testing-for-server-side-parameter-pollution-in-REST-paths" class="headerlink" title="5.2 Testing for server-side parameter pollution in REST paths"></a>5.2 Testing for server-side parameter pollution in REST paths</h2><p>RESTful API 可能将参数名称和值放置在 URL 路径中，而非查询字符串中。</p>
+<p>例如，考虑以下路径：&#x2F;api&#x2F;users&#x2F;123</p>
+<p>该 URL 路径可分解如下：</p>
+<p>• &#x2F;api 是根 API 端点。</p>
+<p>• &#x2F;users 代表资源，此处为用户资源。</p>
+<p>• &#x2F;123 代表参数，此处是特定用户的标识符。</p>
+<p>假设存在一个基于用户名编辑个人资料的应用程序。请求将发送至以下端点：</p>
+<p>​<code>GET /edit_profile.php?name=peter</code></p>
+<p>这将触发服务器端请求：</p>
+<p>​<code>GET /api/private/users/peter</code></p>
+<p>攻击者可能通过操纵服务器端URL路径参数来利用该API漏洞。测试此漏洞时，可添加路径遍历序列修改参数并观察应用程序响应。可提交URL编码的peter&#x2F;..&#x2F;admin作为name参数值：</p>
+<p>​<code>GET /edit_profile.php?name=peter%2f..%2fadmin</code></p>
+<p>这可能导致服务器端请求如下：</p>
+<p>​<code>GET /api/private/users/peter/../admin</code></p>
+<p>若服务器端客户端或后端API对路径进行规范化处理，则可能解析为 &#x2F;api&#x2F;private&#x2F;users&#x2F;admin。</p>
+<h2 id="5-3-Testing-for-server-side-parameter-pollution-in-structured-data-formats"><a href="#5-3-Testing-for-server-side-parameter-pollution-in-structured-data-formats" class="headerlink" title="5.3 Testing for server-side parameter pollution in structured data formats"></a>5.3 Testing for server-side parameter pollution in structured data formats</h2><p>攻击者可能通过操纵参数来利用服务器处理其他结构化数据格式（如JSON或XML）时的漏洞。为测试此类漏洞，可向用户输入中注入异常结构化数据，观察服务器响应方式。<br>假设某应用允许用户编辑个人资料，并通过向服务器端API发送请求来应用修改。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">当编辑姓名时，浏览器将发送以下请求：</span></span><br><span class="line"><span class="string">POST</span> <span class="string">/myaccount</span></span><br><span class="line"><span class="string">name=peter</span></span><br><span class="line"></span><br><span class="line"><span class="string">这将触发服务器端请求：</span></span><br><span class="line"><span class="string">PATCH</span> <span class="string">/users/7312/update</span></span><br><span class="line">&#123;<span class="string">&quot;name&quot;</span><span class="string">:&quot;peter&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="string">尝试在请求中添加access_level参数：</span></span><br><span class="line"><span class="string">POST</span> <span class="string">/myaccount</span></span><br><span class="line"><span class="string">name=peter&quot;,&quot;access_level&quot;:&quot;administrator</span></span><br><span class="line"></span><br><span class="line"><span class="string">若用户输入未经充分验证或清理就直接添加到服务器端</span> <span class="string">JSON</span> <span class="string">数据中，将导致以下服务器端请求：</span></span><br><span class="line"><span class="string">PATCH</span> <span class="string">/users/7312/update</span></span><br><span class="line">&#123;<span class="string">name=&quot;peter&quot;</span>,<span class="string">&quot;access_level&quot;</span><span class="string">:&quot;administrator&quot;</span>&#125;</span><br><span class="line"><span class="string">这可能导致用户</span> <span class="string">peter</span> <span class="string">被授予管理员权限。</span></span><br></pre></td></tr></table></figure>
+
+<p>考虑一个类似的例子，但客户端用户输入采用JSON数据格式。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">当你编辑姓名时，浏览器会发出以下请求：</span></span><br><span class="line"><span class="string">POST</span> <span class="string">/myaccount</span></span><br><span class="line">&#123;<span class="attr">&quot;name&quot;:</span> <span class="string">&quot;peter&quot;</span>&#125;</span><br><span class="line"><span class="string">这将导致服务器端发出以下请求：</span></span><br><span class="line"><span class="string">PATCH</span> <span class="string">/users/7312/update</span></span><br><span class="line">&#123;<span class="string">&quot;name&quot;</span><span class="string">:&quot;peter&quot;</span>&#125;</span><br><span class="line"><span class="string">若尝试在请求中添加access_level参数：</span></span><br><span class="line"><span class="string">POST</span> <span class="string">/myaccount</span></span><br><span class="line">&#123;<span class="attr">&quot;name&quot;:</span> <span class="string">&quot;peter&quot;</span>,<span class="string">&quot;access_level&quot;</span><span class="string">:&quot;administrator&quot;</span>&#125;</span><br><span class="line"><span class="string">当用户输入被解码后，若未进行充分编码就直接添加到服务器端JSON数据中，将导致服务器端发出以下请求：</span></span><br><span class="line"><span class="string">PATCH</span> <span class="string">/users/7312/update</span></span><br><span class="line">&#123;<span class="string">&quot;name&quot;</span><span class="string">:&quot;peter&quot;</span>,<span class="string">&quot;access_level&quot;</span><span class="string">:&quot;administrator&quot;</span>&#125;</span><br><span class="line"><span class="string">这同样可能导致用户peter获得管理员权限。</span></span><br></pre></td></tr></table></figure>
+
+<p>结构化格式注入也可能出现在响应中。例如，当用户输入被安全存储在数据库中，随后在后端API的JSON响应中未进行充分编码就直接嵌入时，就会发生这种情况。通常，您可以在响应中以与请求相同的方式检测和利用结构化格式注入。</p>
+<p>‍</p>
+<h1 id="LAB"><a href="#LAB" class="headerlink" title="LAB"></a>LAB</h1><h2 id="Lab-Exploiting-an-API-endpoint-using-documentation"><a href="#Lab-Exploiting-an-API-endpoint-using-documentation" class="headerlink" title="Lab: Exploiting an API endpoint using documentation"></a>Lab: Exploiting an API endpoint using documentation</h2><p><img src="/images/image-20251123131557-aor40oy.png" alt="image"></p>
+<p>‍</p>
+<p><img src="/images/image-20251123131701-acoqkdd.png" alt="image"></p>
+<p>要解决这个问题，请找到公开的API文档并删除carlos。您可以使用以下凭据登录自己的帐户：wiener:peter。</p>
+<p>使用凭证 wiener:peter 登录 Burp 的浏览器中的应用程序，并更新您的电子邮件地址。<br>在 Proxy &gt; HTTP history 中，右键点击 PATCH &#x2F;api&#x2F;user&#x2F;wiener 请求，并选择 Send to Repeater。<br>转到 Repeater 标签页。发送 PATCH &#x2F;api&#x2F;user&#x2F;wiener 请求。注意，这将检索用户 wiener 的凭证。<br>从请求的路径中删除 &#x2F;wiener，因此端点现在为 &#x2F;api&#x2F;user，然后发送请求。注意，这将返回一个错误，因为没有用户标识符。<br>从请求的路径中删除 &#x2F;user，因此端点现在为 &#x2F;api，然后发送请求。注意，这将检索 API 文档。</p>
+<p><img src="/images/image-20251123132102-lpt82ks.png" alt="image"><br>右键点击响应，并选择 Show response in browser。复制 URL。<br>将 URL 粘贴到 Burp 的浏览器中以访问文档。注意，文档是交互式的。<br>要删除 Carlos 并解决实验室，请点击 DELETE 行，输入 carlos，然后点击 Send request。</p>
+<p><img src="/images/image-20251123132240-nyofjd0.png" alt="image"></p>
+<p>‍</p>
+<h2 id="Lab-Finding-and-exploiting-an-unused-API-endpoint"><a href="#Lab-Finding-and-exploiting-an-unused-API-endpoint" class="headerlink" title="Lab: Finding and exploiting an unused API endpoint"></a>Lab: Finding and exploiting an unused API endpoint</h2><p>为了解决这个问题，利用一个隐藏的API端点来购买一件轻量级的l33t皮夹克。您可以使用以下凭据登录自己的帐户：wiener:peter。</p>
+<h4 id="Required-knowledge"><a href="#Required-knowledge" class="headerlink" title="Required knowledge"></a>Required knowledge</h4><p>To solve this lab, you’ll need to know:</p>
+<ul>
+<li>How to use error messages to construct a valid request.</li>
+<li>How HTTP methods are used by RESTful APIs.</li>
+<li>How changing the HTTP method can reveal additional functionality.</li>
+</ul>
+<p>在Burp的浏览器中，访问实验室并点击一个产品。<br>在Proxy &gt; HTTP history中，注意到产品的API请求。例如，&#x2F;api&#x2F;products&#x2F;3&#x2F;price。<br>右击API请求并选择Send to Repeater。<br>在Repeater标签页中，将API请求的HTTP方法从GET改为OPTIONS，然后发送请求。注意，响应中指定了允许的GET和PATCH方法。<br>将API请求的方法从GET改为PATCH，然后发送请求。注意，您会收到一个未授权的消息。这可能表明您需要身份验证才能更新订单。<br>在Burp的浏览器中，使用凭据wiener:peter登录到应用程序。<br>点击轻量级“l33t”皮夹克产品。<br>在Proxy &gt; HTTP history中，右击皮夹克的API&#x2F;products&#x2F;1&#x2F;price请求并选择Send to Repeater。<br>在Repeater标签页中，将API请求的方法从GET改为PATCH，然后发送请求。注意，这将由于Content-Type不正确而导致错误。错误消息指定Content-Type应该是application&#x2F;json。<br>添加一个Content-Type头并将值设置为application&#x2F;json。</p>
+<p><img src="/images/image-20251123135004-phubkvl.png" alt="image"><br>添加一个空JSON对象{}作为请求体，然后发送请求。注意，这将由于请求体中缺少price参数而导致错误。<br>向JSON对象添加一个值为0的price参数{“price”:0}。发送请求。<br>在Burp的浏览器中，重新加载皮夹克产品页面。注意，皮夹克的价格现在是<code>$0.00</code>.</p>
+<p><img src="/images/image-20251123135046-5latj9i.png" alt="image"></p>
+<ol>
+<li>Add the leather jacket to your basket.</li>
+<li>Go to your basket and click <strong>Place order</strong> to solve the lab.</li>
+</ol>
+<p>‍</p>
+<h2 id="Lab-Exploiting-a-mass-assignment-vulnerability"><a href="#Lab-Exploiting-a-mass-assignment-vulnerability" class="headerlink" title="Lab: Exploiting a mass assignment vulnerability"></a>Lab: Exploiting a mass assignment vulnerability</h2><p>为了解决这个问题，找到并利用一个大规模分配漏洞来购买一件轻量级的l33t皮夹克。您可以使用以下凭据登录自己的帐户：wiener:peter。</p>
+<p>为了解决这个实验室，你需要知道：<br>• 什么是批量赋值。<br>• 为什么批量赋值可能会导致隐藏的参数。<br>• 如何识别隐藏参数。<br>• 如何利用批量分配漏洞。</p>
+<p>这些点在我们的话题中都有所涉及。</p>
+<p><img src="/images/image-20251123170344-xucg0ny.png" alt="image"></p>
+<p><img src="/images/image-20251123170401-l96g7hk.png" alt="image"></p>
+<p>增加一个参数</p>
+<p><img src="/images/image-20251123170643-acclji1.png" alt="image"></p>
+<p><img src="/images/image-20251123170834-u7y5ia5.png" alt="image"></p>
+<p>最后调到100</p>
+<p><img src="/images/image-20251123170939-jl0w5kj.png" alt="image"></p>
+<h2 id="Lab-Exploiting-server-side-parameter-pollution-in-a-query-string"><a href="#Lab-Exploiting-server-side-parameter-pollution-in-a-query-string" class="headerlink" title="Lab: Exploiting server-side parameter pollution in a query string"></a>Lab: Exploiting server-side parameter pollution in a query string</h2><p>首先，测试服务器端参数，发现%23和%26可以起到对应的作用</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">csrf=xb1WmGehcN4ynWtP4hXCynB26bi7gpUl&amp;username=administrator%26field=reset_token%23</span></span><br><span class="line"><span class="string">%23在field参属下没有被过滤，%26本来就可以用</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="string">刚开始%26后面接的是x=y，不存在参数，改成field参数是错误消息提供的，</span></span><br><span class="line"><span class="string">field的值首先是遍历的，bp字典里有服务器端参数，爆出来一个email，出来结果是一样的，</span></span><br><span class="line"><span class="string">然后在js里发现了reset_token，然后返回了该账号下对应重置密码的token</span></span><br></pre></td></tr></table></figure>
+
+<p>‍</p>
+<h2 id="Lab-Exploiting-server-side-parameter-pollution-in-a-REST-URL"><a href="#Lab-Exploiting-server-side-parameter-pollution-in-a-REST-URL" class="headerlink" title="Lab: Exploiting server-side parameter pollution in a REST URL"></a>Lab: Exploiting server-side parameter pollution in a REST URL</h2><p>研究行为</p>
+<ol>
+<li>在Burp浏览器中，触发管理员用户的密码重置操作。</li>
+<li>在代理 &gt; HTTP历史记录中，观察POST &#x2F;forgot-password请求及关联的&#x2F;static&#x2F;js&#x2F;forgotPassword.js JavaScript文件。</li>
+<li>右键点击POST &#x2F;forgot-password请求，选择”发送到中继器”。</li>
+<li>在中继器标签页重新发送请求，确认响应结果一致。</li>
+<li>发送多种修改用户名参数值的请求，判断输入是否未经转义直接放入服务器端请求的URL路径：</li>
+<li>提交URL编码的administrator#作为用户名参数值。<br>注意此操作返回无效路由错误。表明服务器可能将输入置于请求路径中，且片段截断了尾部数据。该错误信息同时提及API定义。</li>
+<li>将用户名参数值从 administrator%23 改为 URL 编码的 administrator?，然后发送请求。<br>注意此操作同样返回无效路由错误。这表明输入可能位于URL路径中，因为?字符标志着查询字符串的起始位置，从而截断了URL路径。</li>
+<li>将用户名参数值从administrator%3F改为.&#x2F;administrator后发送请求。<br>观察到此时返回原始响应。这表明请求可能访问了与原始请求相同的URL路径，进一步证实输入内容可能位于URL路径中。</li>
+<li>将用户名参数值从.&#x2F;administrator改为..&#x2F;administrator，然后发送请求。<br>观察到此时返回无效路由错误信息。这表明请求可能访问了无效的URL路径。</li>
+</ol>
+<p>‍</p>
+<p>导航至API定义</p>
+<ol>
+<li>将用户名参数值从 ..&#x2F;administrator 改为 ..&#x2F;%23。注意会收到无效路由响应。</li>
+<li>逐步添加更多 ..&#x2F; 序列直至 ..&#x2F;..&#x2F;..&#x2F;..&#x2F;%23。此时返回未找到响应，表明您已导航至API根目录之外。</li>
+<li>在此层级，向URL路径添加常见API定义文件名。例如提交以下内容：<br>username&#x3D;..&#x2F;..&#x2F;..&#x2F;..&#x2F;openapi.json%23<br>注意此时返回的错误信息包含用于查找用户的API端点：<br>&#x2F;api&#x2F;internal&#x2F;v1&#x2F;users&#x2F;{username}&#x2F;field&#x2F;{field}<br>请注意该接口说明URL路径包含名为field的参数</li>
+</ol>
+<p>‍</p>
+<p>利用该漏洞</p>
+<ol>
+<li>根据已识别端点的结构更新用户名参数值。为字段参数添加无效值：<br>username&#x3D;administrator&#x2F;field&#x2F;foo%23<br>发送请求。注意此操作将返回错误信息，因为该API仅支持电子邮件字段。</li>
+<li>将电子邮件作为字段参数值添加：<br>username&#x3D;administrator&#x2F;field&#x2F;email%23<br>发送请求。注意此时返回原始响应，表明服务器端应用识别了注入的field参数，且email属于有效字段类型。</li>
+<li>在代理 &gt; HTTP历史记录中查看&#x2F;static&#x2F;js&#x2F;forgotPassword.js脚本文件。定位密码重置接口，该接口引用passwordResetToken参数：<br>&#x2F;forgot-password?passwordResetToken&#x3D;${resetToken}</li>
+<li>在”重复器”选项卡中，将字段参数值从email改为passwordResetToken：<br>username&#x3D;administrator&#x2F;field&#x2F;passwordResetToken%23<br>发送请求。注意此时返回错误信息，因为应用程序设置的API版本不支持passwordResetToken参数。</li>
+<li>使用先前确定的&#x2F;api&#x2F;接口，在username参数值中修改API版本：<br>username&#x3D;..&#x2F;..&#x2F;v1&#x2F;users&#x2F;administrator&#x2F;field&#x2F;passwordResetToken%23<br>发送请求。注意此时返回密码重置令牌，请记录该令牌。</li>
+<li>在Burp浏览器地址栏输入密码重置接口。将密码重置令牌作为reset_token参数值添加，例如：<br>&#x2F;forgot-password?passwordResetToken&#x3D;123456789</li>
+<li>设置新密码。</li>
+<li>使用新密码以管理员身份登录。</li>
+<li>进入管理面板删除carlos用户即可完成实验。</li>
+</ol>
+<h1 id=""><a href="#" class="headerlink" title=""></a></h1>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2026/01/23/API%20testing/" data-id="cmkqmafbb0000dwvs209t2jhs" data-title="5.API testing" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2026/01/22/Business%20logic%20vulnerabilities/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">4.Business logic vulnerabilities</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/portswigger/">portswigger</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/01/">January 2026</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2026/01/23/API%20testing/">5.API testing</a>
+          </li>
+        
+          <li>
+            <a href="/2026/01/22/Business%20logic%20vulnerabilities/">4.Business logic vulnerabilities</a>
+          </li>
+        
+          <li>
+            <a href="/2026/01/19/Server-side%20request%20forgery%20(SSRF)/">3.Server-side request forgery (SSRF)</a>
+          </li>
+        
+          <li>
+            <a href="/2026/01/12/Authentication%E8%BA%AB%E4%BB%BD%E9%AA%8C%E8%AF%81/">2.Authentication身份验证</a>
+          </li>
+        
+          <li>
+            <a href="/2026/01/08/%E8%B7%AF%E5%BE%84%E9%81%8D%E5%8E%86/">1.路径穿越</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2026 hr1sto<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>
