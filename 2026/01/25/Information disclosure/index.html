@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>6.Information disclosure | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="修订时间：2026.1.25 1.概念信息泄露，也称为信息泄漏，是指网站无意中向其用户透露敏感信息。根据上下文，网站可能会向潜在的攻击者泄露各种信息，包括：• 其他用户的数据，例如用户名或财务信息• 敏感的商业或业务数据• 网站及其基础设施的技术细节 信息泄露的一些基本示例如下：• 通过robots.txt文件或目录列表显示隐藏目录的名称、结构和内容。• 通过临时备份提供对源代码文件的访问。• 在">
+<meta property="og:type" content="article">
+<meta property="og:title" content="6.Information disclosure">
+<meta property="og:url" content="http://example.com/2026/01/25/Information%20disclosure/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="修订时间：2026.1.25 1.概念信息泄露，也称为信息泄漏，是指网站无意中向其用户透露敏感信息。根据上下文，网站可能会向潜在的攻击者泄露各种信息，包括：• 其他用户的数据，例如用户名或财务信息• 敏感的商业或业务数据• 网站及其基础设施的技术细节 信息泄露的一些基本示例如下：• 通过robots.txt文件或目录列表显示隐藏目录的名称、结构和内容。• 通过临时备份提供对源代码文件的访问。• 在">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/images/image-20251124191232-jl27bjy.png">
+<meta property="og:image" content="http://example.com/images/image-20251124191740-ope5rcj.png">
+<meta property="og:image" content="http://example.com/images/image-20251124205427-hq1f2l0.png">
+<meta property="og:image" content="http://example.com/images/image-20251124205711-pvi3udp.png">
+<meta property="og:image" content="http://example.com/images/image-20251124220315-aakhwjr.png">
+<meta property="og:image" content="http://example.com/images/image-20251124212521-nvus7fc.png">
+<meta property="og:image" content="http://example.com/images/image-20251124213142-woeehpa.png">
+<meta property="og:image" content="http://example.com/images/image-20251124213256-bgox70f.png">
+<meta property="article:published_time" content="2026-01-25T07:09:15.000Z">
+<meta property="article:modified_time" content="2026-01-25T15:12:35.679Z">
+<meta property="article:author" content="hr1sto">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/image-20251124191232-jl27bjy.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.2.0/css/fork-awesome.min.css">
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-Information disclosure" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/01/25/Information%20disclosure/" class="article-date">
+  <time class="dt-published" datetime="2026-01-25T07:09:15.000Z" itemprop="datePublished">2026-01-25</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/portswigger/">portswigger</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      6.Information disclosure
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>修订时间：2026.1.25</p>
+<h1 id="1-概念"><a href="#1-概念" class="headerlink" title="1.概念"></a>1.概念</h1><p>信息泄露，也称为信息泄漏，是指网站无意中向其用户透露敏感信息。根据上下文，网站可能会向潜在的攻击者泄露各种信息，包括：<br>• 其他用户的数据，例如用户名或财务信息<br>• 敏感的商业或业务数据<br>• 网站及其基础设施的技术细节</p>
+<p>信息泄露的一些基本示例如下：<br>• 通过robots.txt文件或目录列表显示隐藏目录的名称、结构和内容。<br>• 通过临时备份提供对源代码文件的访问。<br>• 在错误消息中明确提及数据库表或列的名称。<br>• 不必要地暴露高度敏感的信息，例如信用卡详细信息。<br>• 在源代码中硬编码API密钥、IP地址、数据库凭证等。<br>• 通过应用程序行为的细微差异来暗示资源、用户名等的存在或不存在。</p>
+<p>信息泄露漏洞可能以无数不同的方式出现，但大致可以分为以下几类：<br>• 未从公开内容中删除内部内容。例如，标记中的开发者注释有时在生产环境中对用户可见。<br>• 网站和相关技术的不安全配置。例如，未能禁用调试和诊断功能有时会为攻击者提供有用的工具，帮助他们获取敏感信息。默认配置也可能使网站容易受到攻击，例如，通过显示过于详细的错误消息。<br>• 应用程序有缺陷的设计和行为。例如，如果网站在发生不同的错误状态时返回不同的响应，这也可以允许攻击者枚举敏感数据，例如有效的用户凭证。</p>
+<h1 id="2-How-to-test-for-information-disclosure-vulnerabilities"><a href="#2-How-to-test-for-information-disclosure-vulnerabilities" class="headerlink" title="2.How to test for information disclosure vulnerabilities"></a>2.How to test for information disclosure vulnerabilities</h1><p>应避免过于狭隘地关注某一特定漏洞。敏感数据可能通过各种途径泄露，因此注意不要遗漏以后可能有用的任何信息,通常会在测试其他内容时找到敏感数据。</p>
+<h2 id="2-1-Fuzzing"><a href="#2-1-Fuzzing" class="headerlink" title="2.1 Fuzzing"></a>2.1 Fuzzing</h2><p>如果你发现了有趣的参数，可以尝试提交意想不到的数据类型和专门制作的模糊字符串，看看会有什么效果。</p>
+<p>虽然响应有时会明确透露有趣的信息，但它们也可以更微妙地暗示应用程序的行为。这可能是处理请求所花费的时间的细微差异。即使错误消息的内容没有透露任何信息，但有时遇到一种错误情况而不是另一种错误情况的事实本身就是有用的信息。</p>
+<p>你可以使用Burp Intruder等工具自动化这个过程的大部分工作。这样做有几个好处，最明显的是，你可以：</p>
+<ol>
+<li>将有效负载位置添加到参数中，并使用模糊字符串的预构建字典来快速连续测试大量不同的输入。</li>
+<li>通过比较HTTP状态码、响应时间、长度等，轻松识别响应中的差异。</li>
+<li>使用grep匹配规则快速识别关键词的出现，例如error、invalid、SELECT、SQL等。</li>
+<li>应用grep提取规则提取并比较响应中有趣项目的含量。</li>
+</ol>
+<p>您还可以使用Logger++扩展，可以从BApp商店获得。除了记录来自Burp所有工具的请求和响应之外，它还允许您定义高级过滤器，以突出显示感兴趣的条目。这只是众多Burp扩展之一，可以帮助您找到网站泄露的任何敏感数据。</p>
+<h2 id="2-2-Using-Burp-Scanner"><a href="#2-2-Using-Burp-Scanner" class="headerlink" title="2.2 Using Burp Scanner"></a>2.2 Using Burp Scanner</h2><p>在您浏览时提供实时扫描功能以审核项目，或者您可以安排自动扫描代表您抓取并审核目标站点。</p>
+<p>两种方法都会自动为您标记许多信息泄露漏洞。例如，如果Burp Scanner在响应中找到敏感信息（例如私钥、电子邮件地址和信用卡号），它会提醒您。它还会识别任何备份文件、目录列表等。</p>
+<h2 id="2-3-Using-Burp’s-engagement-tools"><a href="#2-3-Using-Burp’s-engagement-tools" class="headerlink" title="2.3 Using Burp’s engagement tools"></a>2.3 Using Burp’s engagement tools</h2><p>Burp Suite 提供了几种参与工具，您可以使用这些工具更轻松地在目标网站中找到有趣的信息。 您可以从上下文菜单访问参与工具——只需右键单击任何 HTTP 消息、Burp 代理条目或站点地图中的项目，然后转到“参与工具”。 在这种情况下，以下工具特别有用。</p>
+<h3 id="2-3-1-Search"><a href="#2-3-1-Search" class="headerlink" title="2.3.1 Search"></a>2.3.1 Search</h3><p>您可以使用此工具在所选项目中查找任何表达式。 您可以使用各种高级搜索选项微调结果，例如正则表达式搜索或否定搜索。 这对于快速查找特定兴趣关键词的出现（或缺失）很有用。</p>
+<h3 id="2-3-2-Find-comments"><a href="#2-3-2-Find-comments" class="headerlink" title="2.3.2 Find comments"></a>2.3.2 Find comments</h3><p> 您可以使用此工具快速提取在所选项目中发现的所有开发人员注释。 它还提供选项卡，可立即访问找到每个注释的 HTTP 请求&#x2F;响应周期。</p>
+<h3 id="2-3-3-Discover-content"><a href="#2-3-3-Discover-content" class="headerlink" title="2.3.3 Discover content"></a>2.3.3 Discover content</h3><p>您可以使用此工具来识别网站可见内容中未链接的其他内容和功能。 这对于查找站点地图自动中不会出现的其他目录和文件很有用。</p>
+<h2 id="2-4-Engineering-informative-responses"><a href="#2-4-Engineering-informative-responses" class="headerlink" title="2.4 Engineering informative responses"></a>2.4 Engineering informative responses</h2><p>详细的错误信息有时候会在你进行正常的测试工作时，透露一些有趣的信息。然而，通过研究错误信息根据你的输入而变化的方式，你可以将这个方法更进一步。在某些情况下，你将可以操作网站通过错误信息来提取任意数据。</p>
+<p>有许多种方法可以做到这一点，这取决于你所遇到的特定情况。一个常见的例子是让应用程序逻辑对特定数据项尝试一个无效的操作。例如，提交一个无效的参数值可能会导致一个包含有趣细节的堆栈跟踪或调试响应。你有时可以导致错误消息在响应中披露你所需数据的值。</p>
+<h1 id="3-Common-sources-of-information-disclosure"><a href="#3-Common-sources-of-information-disclosure" class="headerlink" title="3.Common sources of information disclosure"></a>3.Common sources of information disclosure</h1><h2 id="3-1-Files-for-web-crawlers"><a href="#3-1-Files-for-web-crawlers" class="headerlink" title="3.1 Files for web crawlers"></a>3.1 Files for web crawlers</h2><p>许多网站在&#x2F;robots.txt和&#x2F;sitemap.xml提供文件，以帮助网络爬虫浏览他们的网站。除了其他事项，这些文件通常会列出网络爬虫应该跳过的特定目录，例如，因为它们可能包含敏感信息。</p>
+<p>由于这些文件通常不会从网站内部链接，因此它们可能不会立即出现在Burp的站点地图中。然而，尝试手动导航到&#x2F;robots.txt或&#x2F;sitemap.xml，看看是否能找到有用的东西是值得的。</p>
+<h2 id="3-2-Directory-listings"><a href="#3-2-Directory-listings" class="headerlink" title="3.2 Directory listings"></a>3.2 Directory listings</h2><p>Web服务器可以被配置为在不存在索引页面的情况下自动列出目录的内容。这可以帮助攻击者通过使他们能够快速识别给定路径上的资源，并直接进行分析和攻击这些资源。它特别增加了目录中敏感文件的暴露，这些文件不是打算让用户访问的，例如临时文件和崩溃转储。</p>
+<p>目录列表本身并不一定是一个安全漏洞。然而，如果网站也没有实施正确的访问控制，以这种方式泄露敏感资源的存在和位置显然是一个问题。</p>
+<p><img src="/images/image-20251124191232-jl27bjy.png" alt="image"></p>
+<h2 id="3-3-Developer-comments"><a href="#3-3-Developer-comments" class="headerlink" title="3.3 Developer comments"></a>3.3 Developer comments</h2><p>在开发过程中，有时会在标记中添加内联HTML注释。这些注释通常会在更改部署到生产环境之前被删除。然而，这些注释有时会被忘记、遗漏，甚至有人故意留下，因为他们没有完全意识到安全影响。虽然这些注释在渲染的页面上不可见，但可以使用Burp甚至浏览器内置的开发人员工具轻松访问它们。有时，这些注释包含对攻击者有用的信息。例如，它们可能会暗示隐藏目录的存在，或提供有关应用程序逻辑的线索。</p>
+<h2 id="3-4-Error-messages"><a href="#3-4-Error-messages" class="headerlink" title="3.4 Error messages"></a>3.4 Error messages</h2><p>信息泄露是最常见的漏洞之一，通常是由于详细的错误消息导致的。通常，你在审计过程中应该密切关注所有遇到的错误消息。</p>
+<p>错误消息的内容可以揭示有关给定参数期望什么输入或数据类型的信息。这可以帮助您通过识别可利用的参数来缩小攻击范围。它甚至可以防止您浪费时间尝试注入根本不起作用的有效负载。</p>
+<p>详细的错误消息还可以提供有关网站使用的不同技术的信息。例如，它们可能会明确命名网站正在使用的模板引擎、数据库类型或服务器，以及其版本号。这些信息非常有用，因为您可以轻松地搜索此版本可能存在的任何已记录漏洞。</p>
+<p>同样，您可以检查是否存在任何常见的配置错误或危险默认设置，您可能会利用这些错误或设置。其中一些可能会在官方文档中突出显示。您可能还会发现该网站使用的是某种开源框架。在这种情况下，您可以研究公开可用的源代码，这是构建自己的漏洞利用程序的无价资源。错误消息之间的差异也可以揭示幕后发生的不同应用程序行为。观察错误消息之间的差异是许多技术的关键方面，例如 SQL 注入、用户名枚举等。</p>
+<p><img src="/images/image-20251124191740-ope5rcj.png" alt="image"></p>
+<h2 id="3-5Debugging-data"><a href="#3-5Debugging-data" class="headerlink" title="3.5Debugging data"></a>3.5Debugging data</h2><p>为了便于调试，许多网站会生成包含大量应用程序行为信息的自定义错误消息和日志。虽然这些信息在开发过程中很有用，但如果在生产环境中泄露，它们对攻击者也非常有用。调试消息有时会包含开发攻击的重要信息，包括：</p>
+<p>•可以通过用户输入操纵的关键会话变量的值</p>
+<p>•后端组件的主机名和凭证</p>
+<p>•服务器上的文件和目录名</p>
+<p>•用于加密通过客户端传输的数据的密钥调试信息有时会记录在单独的文件中。</p>
+<p>如果攻击者能够访问此文件，它可以作为理解应用程序运行时状态的有用参考。它还可以提供一些线索，告诉他如何提供精心设计的输入来操纵应用程序状态和控制接收到的信息。</p>
+<p><img src="/images/image-20251124205427-hq1f2l0.png" alt="image"></p>
+<p><img src="/images/image-20251124205711-pvi3udp.png" alt="image"></p>
+<p>‍</p>
+<h2 id="3-6-User-account-pages"><a href="#3-6-User-account-pages" class="headerlink" title="3.6 User account pages"></a>3.6 User account pages</h2><p>用户资料页面通常包含敏感信息</p>
+<p>由于其性质，用户资料或账户页面通常包含敏感信息，例如用户的电子邮件地址、电话号码、API 密钥等。由于用户通常只能访问自己的账户页面，因此这本身并不代表一个漏洞。然而，一些网站存在逻辑缺陷，可能允许攻击者利用这些页面来查看其他用户的数据。例如，考虑一个根据用户参数确定加载哪个用户账户页面的网站。</p>
+<p>大多数网站会采取措施防止攻击者简单地更改此参数以访问任意用户的账户页面。然而，有时加载单个数据项目的逻辑并不那么健壮。攻击者可能无法完全加载另一个用户的账户页面，但是用于获取和渲染用户注册电子邮件地址的逻辑可能不会检查用户参数是否与当前登录的用户匹配。</p>
+<p>在这种情况下，只需更改用户参数，攻击者就可以在自己的账户页面上显示任意用户的电子邮件地址。当我们介绍访问控制和 IDOR 漏洞时，我们将更详细地研究这些类型的漏洞。</p>
+<h2 id="3-7-Source-code-disclosure-via-backup-files"><a href="#3-7-Source-code-disclosure-via-backup-files" class="headerlink" title="3.7 Source code disclosure via backup files"></a>3.7 Source code disclosure via backup files</h2><p>获取源代码访问权限使攻击者更容易理解应用程序的行为并构建高严重性攻击。敏感数据有时甚至直接硬编码在源代码中。典型的例子包括用于访问后端组件的 API 密钥和凭证。</p>
+<p>如果你能够确定某个特定的开源技术正在被使用，这将提供对有限数量源代码的轻松访问。</p>
+<p>偶尔，甚至有可能导致网站暴露自己的源代码。在绘制网站地图时，你可能会发现一些源代码文件被明确引用。不幸的是，请求它们通常不会显示代码本身。当服务器处理具有特定扩展名（例如.php）的文件时，它通常会执行代码，而不是简单地将其作为文本发送给客户端。</p>
+<p>然而，在某些情况下，你可以诱使网站返回文件的内容。</p>
+<p>例如，文本编辑器在编辑原始文件时通常会生成临时备份文件。这些临时文件通常会以某种方式表示，例如在文件名后附加波浪号（~）或添加不同的文件扩展名。使用备份文件扩展名请求代码文件有时可以让你在响应中读取文件的内容。</p>
+<p>‍</p>
+<h3 id="Information-disclosure-due-to-insecure-configuration"><a href="#Information-disclosure-due-to-insecure-configuration" class="headerlink" title="Information disclosure due to insecure configuration"></a>Information disclosure due to insecure configuration</h3><h2 id="3-8-Information-disclosure-due-to-insecure-configuration"><a href="#3-8-Information-disclosure-due-to-insecure-configuration" class="headerlink" title="3.8 Information disclosure due to insecure configuration"></a>3.8 Information disclosure due to insecure configuration</h2><p>网站有时会因为配置不当而变得脆弱。这尤其常见，因为广泛使用了第三方技术，而这些第三方技术的众多配置选项并不一定被实施者很好地理解。</p>
+<p>在其他情况下，开发人员可能会忘记在生产环境中禁用各种调试选项。</p>
+<p>例如，HTTP TRACE方法是为了诊断目的而设计的。如果启用，Web服务器将使用TRACE方法对请求做出响应，在响应中回显收到的确切请求。</p>
+<p>这种行为通常是无害的，但偶尔会导致信息泄露，例如反向代理可能会附加到请求中的内部身份验证标头的名称。</p>
+<p>‍</p>
+<h2 id="3-9-Version-control-history"><a href="#3-9-Version-control-history" class="headerlink" title="3.9 Version control history"></a>3.9 Version control history</h2><p>几乎所有的网站开发都使用某种形式的版本控制系统，比如Git。</p>
+<p>默认情况下，Git项目将其所有版本控制数据存储在一个名为.git的文件夹中。有时，网站会在生产环境中公开这个目录。在这种情况下，你可能只需浏览到&#x2F;.git就能访问它。</p>
+<p>虽然手动浏览原始文件结构和内容通常是不切实际的，但有多种方法可以下载整个.git目录。然后，你可以使用本地安装的Git打开它，以访问网站的版本控制历史记录。其中可能包括包含提交更改的日志和其他有趣的信息。这可能不会让你访问完整的源代码，但比较差异将允许你阅读代码的小片段。</p>
+<p>与任何源代码一样，你可能还会发现一些更改的行中硬编码了敏感数据。</p>
+<h1 id="Lab"><a href="#Lab" class="headerlink" title="Lab"></a>Lab</h1><h2 id="Lab-Information-disclosure-in-version-control-history"><a href="#Lab-Information-disclosure-in-version-control-history" class="headerlink" title="Lab: Information disclosure in version control history"></a>Lab: Information disclosure in version control history</h2><p>本实验室通过其版本控制历史记录公开敏感信息。解决方法：获取administrator用户密码，登录后删除carlos用户。 </p>
+<p>打开实验室并浏览到&#x2F;.git 以揭示实验室的 Git 版本控制数据。</p>
+<p>下载此整个目录的副本。对于 Linux 用户，最简单的方法是使用以下命令：wget -r <a target="_blank" rel="noopener" href="https://your-lab-id.web-security-academy.net/.git/">https://YOUR-LAB-ID.web-security-academy.net/.git/</a> Windows 用户将需要找到其他方法，或者安装类 UNIX 的环境，例如 Cygwin，以便使用此命令。</p>
+<p>使用您本地的 Git 安装浏览下载的目录。</p>
+<p>请注意，有一个提交的信息为“从配置中删除管理员密码”。仔细查看更改的 admin.conf 文件的差异。</p>
+<p>请注意，提交用环境变量 ADMIN_PASSWORD 替换了硬编码的管理员密码。</p>
+<p>但是，硬编码的密码在差异中仍然清晰可见。返回实验室并使用泄漏的密码登录到管理员帐户。要解决实验室，请打开管理界面并删除 carlos。</p>
+<h4 id="git-bash安装wget"><a href="#git-bash安装wget" class="headerlink" title="git bash安装wget"></a>git bash安装wget</h4><p><a target="_blank" rel="noopener" href="https://eternallybored.org/misc/wget/">GNU Wget 1.21.4 for Windows</a></p>
+<p>‍</p>
+<p>​<code>gitk</code>​ 是一个非常轻量级的 Git 仓库浏览器，通常是 Git 安装时的一部分，或者很容易通过包管理器获得。它主要用于查看<strong>历史提交记录、分支结构和文件差异</strong>。</p>
+<p>下个git管理工具：gitk</p>
+<p><img src="/images/image-20251124220315-aakhwjr.png" alt="image"></p>
+<p>‍</p>
+<p>‍</p>
+<h2 id="Lab-Authentication-bypass-via-information-disclosure"><a href="#Lab-Authentication-bypass-via-information-disclosure" class="headerlink" title="Lab: Authentication bypass via information disclosure"></a>Lab: Authentication bypass via information disclosure</h2><p>这个实验室的管理界面存在一个身份验证绕过漏洞，但是如果没有前端使用的自定义HTTP头部的知识，就不可能利用这个漏洞。</p>
+<p>为了解决这个实验室，获取头部的名称，然后使用它来绕过实验室的身份验证。访问管理界面并删除用户carlos。您可以使用以下凭据登录到自己的账户：wiener:peter</p>
+<p><img src="/images/image-20251124212521-nvus7fc.png" alt="image"></p>
+<h4 id="🔎-TRACE-方法的作用"><a href="#🔎-TRACE-方法的作用" class="headerlink" title="🔎 TRACE 方法的作用"></a>🔎 TRACE 方法的作用</h4><p>当客户端发送一个 <code>TRACE</code>​ 请求到服务器时，服务器必须将它接收到的完整请求消息（包括请求行、头部和消息体，如果存在）作为<strong>响应体</strong>原封不动地返回给客户端。</p>
+<p>这个过程主要有以下用途：</p>
+<ol>
+<li><strong>路径诊断 (Path Diagnosis)：</strong>  帮助客户端检查在请求到达目标服务器的过程中，请求信息是否被路径上的<strong>中间代理服务器 (Proxies)</strong>  篡改或修改。</li>
+<li><strong>头部检查 (Header Inspection)：</strong>  确认客户端发送的特定请求头部（Headers）是否正确地到达了最终服务器。这对于检查缓存、认证或自定义头部非常有用。</li>
+<li><strong>调试代理问题 (Debugging Proxy Issues)：</strong>  如果请求经过了多个代理服务器，<code>TRACE</code> 响应可以显示这些代理在请求中添加、修改或删除了哪些头部信息，从而帮助诊断代理链中的配置问题。</li>
+</ol>
+<h4 id="⚠️-安全风险（为何常被禁用）"><a href="#⚠️-安全风险（为何常被禁用）" class="headerlink" title="⚠️ 安全风险（为何常被禁用）"></a>⚠️ 安全风险（为何常被禁用）</h4><p>虽然 <code>TRACE</code>​ 是一种调试工具，但在实际部署中，出于安全考虑，它​<strong>通常是被禁用的</strong>。</p>
+<p>主要的风险在于：​<strong>跨站追踪攻击 (Cross-Site Tracing, XST)</strong> 。</p>
+<ul>
+<li><strong>风险描述：</strong>  攻击者可以结合 <code>TRACE</code>​ 方法和跨站脚本 (XSS) 漏洞，绕过某些安全措施（如 <code>HttpOnly</code> cookie 保护机制）。</li>
+<li><strong>攻击原理：</strong>  如果一个网站存在 XSS 漏洞，攻击者可以注入 JavaScript 代码，利用该代码发送 <code>TRACE</code>​ 请求。由于 <code>TRACE</code>​ 请求会将服务器收到的所有头部信息返回到响应体中，其中就可能包含<strong>用户的敏感 Cookie</strong>（如会话 ID）。攻击者的脚本就可以读取这个响应体，从而窃取用户的会话 Cookie，进行会话劫持。</li>
+</ul>
+<p>‍</p>
+<p>‍</p>
+<p>在Burp Repeater中，浏览至GET &#x2F;admin。响应显示，管理员面板只有在以管理员身份登录或从本地IP请求时才能访问。</p>
+<p><img src="/images/image-20251124213142-woeehpa.png" alt="image"><br>再次发送请求，但这次使用TRACE方法：TRACE &#x2F;admin。<br>研究响应。注意，包含您的IP地址的X-Custom-IP-Authorization标头自动附加到您的请求中。这用于确定请求是否来自本地主机IP地址。<br>转到Proxy &gt; Match and replace。</p>
+<p><img src="/images/image-20251124213256-bgox70f.png" alt="image"><br>在HTTP匹配和替换规则下，单击Add。添加匹配&#x2F;替换规则对话框打开。<br>保持匹配字段为空。<br>在类型下，确保选择了请求标头。<br>在替换字段中，输入以下内容：X-Custom-IP-Authorization: 127.0.0.1。<br>单击测试。<br>在自动修改的请求下，注意Burp已经将X-Custom-IP-Authorization标头添加到修改后的请求中。<br>单击确定。Burp代理现在将X-Custom-IP-Authorization标头添加到您发送的每个请求中。<br>浏览至首页。注意，您现在可以访问管理员面板，在那里您可以删除carlos。</p>
+<h1 id=""><a href="#" class="headerlink" title=""></a></h1>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2026/01/25/Information%20disclosure/" data-id="cmktvklus0000wwvs1g9w5zd4" data-title="6.Information disclosure" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2026/01/23/API%20testing/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">5.API testing</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/portswigger/">portswigger</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/01/">January 2026</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2026/01/25/Information%20disclosure/">6.Information disclosure</a>
+          </li>
+        
+          <li>
+            <a href="/2026/01/23/API%20testing/">5.API testing</a>
+          </li>
+        
+          <li>
+            <a href="/2026/01/22/Business%20logic%20vulnerabilities/">4.Business logic vulnerabilities</a>
+          </li>
+        
+          <li>
+            <a href="/2026/01/19/Server-side%20request%20forgery%20(SSRF)/">3.Server-side request forgery (SSRF)</a>
+          </li>
+        
+          <li>
+            <a href="/2026/01/12/Authentication%E8%BA%AB%E4%BB%BD%E9%AA%8C%E8%AF%81/">2.Authentication身份验证</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2026 hr1sto<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>
