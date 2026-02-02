@@ -71,6 +71,163 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Access control vulnerabilities and privilege escalation" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2026/02/02/Access%20control%20vulnerabilities%20and%20privilege%20escalation/" class="article-date">
+  <time class="dt-published" datetime="2026-02-01T19:26:12.000Z" itemprop="datePublished">2026-02-02</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/portswigger/">portswigger</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2026/02/02/Access%20control%20vulnerabilities%20and%20privilege%20escalation/">7.Access control vulnerabilities and privilege escalation</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>修订时间：2026.2.2</p>
+<h1 id="1-概念"><a href="#1-概念" class="headerlink" title="1.概念"></a>1.概念</h1><p>在Web应用程序的背景下：</p>
+<ol>
+<li>身份验证确认用户是他们所说的那个人。</li>
+<li>会话管理识别哪些后续的HTTP请求是由同一用户发出的。</li>
+<li>访问控制确定用户是否被允许执行他们试图执行的操作。</li>
+</ol>
+<p>访问控制的设计和管理是一个复杂且动态的问题，它将业务、组织和法律约束应用于技术实现。访问控制的设计决策必须由人类做出，因此出错的可能性很高。</p>
+<h2 id="1-1-垂直访问控制"><a href="#1-1-垂直访问控制" class="headerlink" title="1.1 垂直访问控制"></a>1.1 垂直访问控制</h2><p>垂直访问控制是一种限制敏感功能仅对特定类型用户访问的机制。通过垂直访问控制，不同类型的用户可以访问不同的应用程序功能。例如，管理员可能能够修改或删除任何用户的账户，而普通用户则没有权限执行这些操作。垂直访问控制可以是更细粒度的安全模型实现，旨在执行业务策略，例如职责分离和最小权限。</p>
+<h2 id="1-2-水平访问控制"><a href="#1-2-水平访问控制" class="headerlink" title="1.2 水平访问控制"></a>1.2 水平访问控制</h2><p>水平访问控制是一种限制对资源的访问仅针对特定用户的机制。通过水平访问控制，不同的用户可以访问相同类型资源的一个子集。例如，银行应用程序将允许用户查看交易并从他们自己的账户中支付款项，但不能访问任何其他用户的账户。上下文相关的访问控制上下文相关的访问控制根据应用程序的状态或用户与应用程序的交互来限制对功能和资源的访问。</p>
+<h2 id="1-3-上下文相关的访问"><a href="#1-3-上下文相关的访问" class="headerlink" title="1.3 上下文相关的访问"></a>1.3 上下文相关的访问</h2><p>上下文相关访问控制根据应用程序的状态或用户与其交互的情况，限制对功能和资源的访问权限。<br>上下文相关访问控制可防止用户执行操作顺序错误的情况。例如，零售网站可能禁止用户在完成付款后修改购物车中的商品。</p>
+<h1 id="2-Examples-of-broken-access-controls"><a href="#2-Examples-of-broken-access-controls" class="headerlink" title="2.Examples of broken access controls"></a>2.Examples of broken access controls</h1><p>当用户能够访问其无权访问的资源或执行其无权执行的操作时，即存在访问控制漏洞。</p>
+<h2 id="2-1-Vertical-privilege-escalation"><a href="#2-1-Vertical-privilege-escalation" class="headerlink" title="2.1 Vertical privilege escalation"></a>2.1 Vertical privilege escalation</h2><p>如果用户能够访问其无权限访问的功能，则构成垂直权限提升。例如，若非管理员用户能够访问管理页面并删除用户账户，则属于垂直权限提升。</p>
+<h2 id="2-2-Unprotected-functionality"><a href="#2-2-Unprotected-functionality" class="headerlink" title="2.2 Unprotected functionality"></a>2.2 Unprotected functionality</h2><p>最基本的垂直权限提升问题源于应用程序未对敏感功能实施任何保护措施。例如，管理功能可能仅在管理员欢迎页面提供链接，而普通用户欢迎页面则未提供。但用户仍可通过浏览相关管理URL访问这些管理功能。<br>例如，某网站可能在以下URL托管敏感功能：<br>​<code>https://insecure-website.com/admin</code>​<br>该功能可能被任何用户访问，而不仅限于用户界面中拥有功能链接的管理员用户。某些情况下，管理URL可能在其他位置泄露，例如robots.txt文件：<br>​<code>https://insecure-website.com/robots.txt</code><br>即使URL未在任何位置泄露，攻击者仍可能通过字典攻击暴力破解敏感功能的位置。破损的访问控制漏洞存在于用户可以访问他们不应该能够访问的资源或执行操作时。</p>
+<p>垂直权限升级如果用户可以获得他们无权访问的功能，那么这就是垂直权限升级。</p>
+<p>‍</p>
+<p>在某些情况下，通过提供一个不太可预测的URL来隐藏敏感功能。这就是一个所谓的“通过模糊实现安全”的例子。</p>
+<p>然而，隐藏敏感功能并不能提供有效的访问控制，因为用户可能会通过多种方式发现模糊的URL。想象一个在以下URL托管管理功能的应用程序:</p>
+<p>​<code>https://insecure-website.com/administrator-panel-yb556</code></p>
+<p>攻击者可能无法直接猜测到。然而，该应用程序仍然可能会将URL泄露给用户。该URL可能会在根据用户角色构造用户界面的&#x3D;&#x3D;JavaScript中公开:&#x3D;&#x3D;</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;</span><br><span class="line">	<span class="keyword">var</span> isAdmin = <span class="literal">false</span>;</span><br><span class="line">	<span class="keyword">if</span> (isAdmin) &#123;</span><br><span class="line">		...</span><br><span class="line">		<span class="keyword">var</span> adminPanelTag = <span class="variable language_">document</span>.<span class="title function_">createElement</span>(<span class="string">&#x27;a&#x27;</span>);</span><br><span class="line">		adminPanelTag.<span class="title function_">setAttribute</span>(<span class="string">&#x27;href&#x27;</span>, <span class="string">&#x27;https://insecure-website.com/administrator-panel-yb556&#x27;</span>);</span><br><span class="line">		adminPanelTag.<span class="property">innerText</span> = <span class="string">&#x27;Admin panel&#x27;</span>;</span><br><span class="line">		...</span><br><span class="line">	&#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+
+<p>如果用户是管理员用户，该脚本将向用户的UI添加一个链接。但是，包含URL的脚本对所有用户都是可见的，而不管他们的角色是什么。</p>
+<h3 id="基于参数的访问控制方法"><a href="#基于参数的访问控制方法" class="headerlink" title="基于参数的访问控制方法"></a>基于参数的访问控制方法</h3><p>一些应用程序在登录时确定用户的访问权限或角色，然后将此信息存储在用户可控制的位置。这可能是：</p>
+<p>• 隐藏字段。</p>
+<p>• Cookie。</p>
+<p>• 预设查询字符串参数。</p>
+<p>应用程序根据提交的值做出访问控制决定。例如：</p>
+<p><a target="_blank" rel="noopener" href="https://insecure-website.com/login/home.jsp?admin=true">https://insecure-website.com/login/home.jsp?admin=true</a></p>
+<p><a target="_blank" rel="noopener" href="https://insecure-website.com/login/home.jsp?role=1">https://insecure-website.com/login/home.jsp?role=1</a></p>
+<p>这种方法是不安全的，因为用户可以修改值并访问他们无权访问的功能，例如管理功能。</p>
+<p><img src="/images/image-20251126205956-11jnn18.png" alt="image"></p>
+<p><img src="/images/image-20251126210334-8488y04.png" alt="image"></p>
+<h3 id="Broken-access-control-resulting-from-platform-misconfiguration"><a href="#Broken-access-control-resulting-from-platform-misconfiguration" class="headerlink" title="Broken access control resulting from platform misconfiguration"></a>Broken access control resulting from platform misconfiguration</h3><p>一些应用程序在平台层实施访问控制。它们通过根据用户的角色限制对特定URL和HTTP方法的访问来实现这一点。</p>
+<p>例如，一个应用程序可能会配置以下规则：</p>
+<p>​<code>DENY: POST, /admin/deleteUser, managers</code></p>
+<p> 这条规则禁止经理组用户对&#x2F;admin&#x2F;deleteUser URL上的POST方法访问。</p>
+<p>在这种情况下，各种事情可能会出错，导致访问控制被绕过。一些应用程序框架支持各种非标准的HTTP头，这些头可以用来覆盖原始请求中的URL，例如&#x3D;&#x3D;X-Original-URL和X-Rewrite-URL。&#x3D;&#x3D;</p>
+<p>这两个 HTTP头部（Header）是非标准的请求头，主要用于 <strong>URL 重写（URL Rewriting）</strong>  的场景中，特别是在微软的 <strong>IIS (Internet Information Services)</strong>  服务器以及基于 PHP 的框架（如 Symfony、Drupal）运行在 IIS 上时非常常见。</p>
+<p>简单来说，它们的作用是​<strong>在服务器内部发生 URL 重写后，保存用户最初请求的原始 URL</strong>。</p>
+<p>当 Web 服务器接收到一个请求时，它可能会根据配置规则将 URL 修改（Rewrite）为另一个路径，以便后端应用程序（如 PHP、ASP.NET）处理。</p>
+<p>在这种情况下，后端应用处理的是“重写后”的 URL，但它往往需要知道用户浏览器里输入的“重写前”的 URL 是什么（用于生成页面链接、记录日志或路由判断）。</p>
+<p>这两个 Header 就是用来承载这个信息的：</p>
+<ul>
+<li>​<strong>​<code>X-Original-URL</code>​</strong>: 包含原始请求的路径（包含查询字符串）。这是 IIS URL Rewrite 模块主要使用的 Header。</li>
+<li>​<strong>​<code>X-Rewrite-URL</code>​</strong>: 作用与前者相同，通常作为备用，或者被特定的框架（如 Symfony）用来识别原始路径。</li>
+</ul>
+<p>如果一个网站使用严格的前端控制来根据URL限制访问，但应用程序允许通过请求头覆盖URL，那么可能会使用以下请求绕过访问控制：</p>
+<p>​<code>POST / HTTP/1.1 X-Original-URL: /admin/deleteUser...</code></p>
+<p>另一种攻击与请求中使用的HTTP方法有关。前几节中描述的前端控制根据URL和HTTP方法限制访问。在执行操作时，一些网站可以容忍不同的HTTP请求方法。如果攻击者可以使用GET（或其他）方法在受限的URL上执行操作，则他们可以绕过在平台层实施的访问控制。</p>
+<h3 id="Lab-URL-based-access-control-can-be-circumvented"><a href="#Lab-URL-based-access-control-can-be-circumvented" class="headerlink" title="Lab: URL-based access control can be circumvented"></a>Lab: URL-based access control can be circumvented</h3><p><img src="/images/image-20251126211259-whskd2u.png" alt="image"></p>
+<p><img src="/images/image-20251126211349-tzi1t8h.png" alt="image"></p>
+<p><img src="/images/image-20251126211356-zusad98.png" alt="image"></p>
+<ol>
+<li><p>尝试加载&#x2F;admin页面，并观察你是否被阻止。请注意，响应非常简单，表明它可能来自前端系统。</p>
+</li>
+<li><p>将请求发送到Burp Repeater。将请求行中的URL更改为&#x2F;，并添加HTTP头X-Original-URL: &#x2F;invalid。观察应用程序返回一个“未找到”响应。这表明后端系统正在处理X-Original-URL头中的URL。</p>
+<p>‍</p>
+<p><img src="/images/image-20251126211901-oo7ftup.png" alt="image"></p>
+</li>
+<li><p>将X-Original-URL头的值更改为&#x2F;admin。观察你现在可以访问admin页面了。</p>
+<p><img src="/images/image-20251126212953-x5j0j1j.png" alt="image"></p>
+</li>
+<li><p>要删除carlos，请在真实查询字符串中添加?username&#x3D;carlos，并将X-Original-URL路径更改为&#x2F;admin&#x2F;delete。</p>
+<p><img src="/images/image-20251126213000-7sqaxng.png" alt="image"></p>
+</li>
+</ol>
+<p>给的这个头啊，他会自己帮我们导过去。</p>
+<h3 id="Lab-Method-based-access-control-can-be-circumvented"><a href="#Lab-Method-based-access-control-can-be-circumvented" class="headerlink" title="Lab: Method-based access control can be circumvented"></a>Lab: Method-based access control can be circumvented</h3><p>本实验室部分基于HTTP请求方法实现访问控制。您可以通过使用凭据管理员：admin登录来熟悉管理面板。要解决这个问题，请使用凭证wiener:peter登录，并利用有缺陷的访问控制将自己提升为管理员。</p>
+<p><img src="/images/image-20251126215036-wosdbwu.png" alt="image"></p>
+<p>使用管理员凭据登录。<br>浏览到管理面板，提升卡洛斯，并发送HTTP请求到Burp Repeater。<br>打开一个私有&#x2F;隐身浏览器窗口，并使用非管理员凭据登录。<br>尝试通过将非管理员用户的会话cookie复制到现有的Burp Repeater请求中，用非管理员用户重新提升卡洛斯，并观察响应显示“未授权”。</p>
+<p><img src="/images/image-20251126215635-d0qcozk.png" alt="image"></p>
+<p><img src="/images/image-20251126215632-84eahlr.png" alt="image"><br>将方法从POST改为POSTX，并观察响应更改为“缺少参数”。<br>通过右键单击并选择“更改请求方法”，将请求转换为使用GET方法。<br>将用户名参数更改为您的用户名并重新发送请求。</p>
+<p><img src="/images/image-20251126215911-b3dj67b.png" alt="image"></p>
+<h3 id="Broken-access-control-resulting-from-URL-matching-discrepancies"><a href="#Broken-access-control-resulting-from-URL-matching-discrepancies" class="headerlink" title="Broken access control resulting from URL-matching discrepancies"></a>Broken access control resulting from URL-matching discrepancies</h3><p>网站可以在多大程度上严格匹配传入请求到已定义端点的路径方面有所不同。例如，它们可能会容忍大小写不一致，因此对 &#x2F;ADMIN&#x2F;DELETEUSER 的请求可能仍然会被映射到 &#x2F;admin&#x2F;deleteUser 端点。</p>
+<p>如果访问控制机制的容忍度较低，它可能会将它们视为两个不同的端点，并因此无法执行正确的限制。如果使用 Spring 框架的开发人员启用了 &#x3D;&#x3D;useSuffixPatternMatch&#x3D;&#x3D; 选项，那么也会出现类似的差异。这允许带有任意文件扩展名的路径被映射到没有文件扩展名的等效端点。换句话说，对 &#x2F;admin&#x2F;deleteUser.anything 的请求仍然会匹配 &#x2F;admin&#x2F;deleteUser 模式。</p>
+<p>在 Spring 5.3 之前，此选项默认是启用的。在其他系统上，您可能会遇到 &#x2F;admin&#x2F;deleteUser 和 &#x2F;admin&#x2F;deleteUser&#x2F; 是否被视为不同端点的问题。在这种情况下，您可能可以通过&#x3D;&#x3D;在路径后附加尾随斜杠来绕过访问控制。&#x3D;&#x3D;</p>
+<p>‍</p>
+<h3 id=""><a href="#" class="headerlink" title=""></a></h3><h2 id="2-3-Horizontal-privilege-escalation"><a href="#2-3-Horizontal-privilege-escalation" class="headerlink" title="2.3 Horizontal privilege escalation"></a>2.3 Horizontal privilege escalation</h2><p>横向权限提升是指如果一个用户能够获得属于另一个用户的资源的访问权限，而不是他们自己那种类型的资源。例如，如果一个员工可以访问其他员工的记录以及他们自己的记录，那么这就是横向权限提升。横向权限提升攻击可能使用与垂直权限提升相似的攻击方法。</p>
+<p>例如，用户可能会使用以下URL访问他们自己的账户页面</p>
+<p>​<code>https://insecure-website.com/myaccount?id=123</code></p>
+<p>如果攻击者将id参数的值修改为另一个用户的id，他们可能会获得对另一个用户账户页面的访问权限，以及相关的数据和功能。</p>
+<p>在某些应用程序中，可利用的参数没有可预测的值。例如，应用程序可能会使用全局唯一标识符（GUID）而不是递增的数字来标识用户。这可能会阻止攻击者猜测或预测其他用户的标识符。然而，属于其他用户的 GUID 可能在应用程序的其他地方公开，在这些地方引用了用户，例如用户消息或评论。</p>
+<p>在某些情况下，应用程序确实能检测到用户未被允许访问该资源，并重定向到登录页面。然而，包含重定向的响应可能仍然包含一些属于目标用户的敏感数据，因此攻击仍然成功。</p>
+<h2 id="2-4-Insecure-direct-object-references"><a href="#2-4-Insecure-direct-object-references" class="headerlink" title="2.4 Insecure direct object references"></a>2.4 Insecure direct object references</h2><p>不安全的直接对象引用（IDOR）是访问控制漏洞的一个子类别。当应用程序使用用户提供的输入直接访问对象时，若攻击者能通过篡改输入获得未经授权的访问权限，便会引发IDOR漏洞。该漏洞因入选OWASP 2007十大安全漏洞而广为人知。它只是众多可能绕过访问控制的实现错误之一。</p>
+<p>‍</p>
+<p>‍</p>
+<h2 id="2-5-Access-control-vulnerabilities-in-multi-step-processes"><a href="#2-5-Access-control-vulnerabilities-in-multi-step-processes" class="headerlink" title="2.5 Access control vulnerabilities in multi-step processes"></a>2.5 Access control vulnerabilities in multi-step processes</h2><p>许多网站通过一系列步骤实现重要功能。这种情况常见于：<br>• 需要收集多种输入或选项时<br>• 用户需在操作执行前审核并确认细节时<br>例如，更新用户信息的行政功能可能涉及以下步骤：</p>
+<ol>
+<li>加载包含特定用户信息的表单</li>
+<li>提交修改内容</li>
+<li>审核修改内容并确认</li>
+</ol>
+<p>有时网站会对部分步骤实施严格访问控制，却忽略其他环节。设想某网站正确应用了前两步的访问控制，却未对第三步进行管控。该网站默认用户必须先完成受控的前两步才能进入第三步。攻击者可通过跳过前两步，直接提交包含必要参数的第三步请求，从而获得功能的非法访问权限。</p>
+<h2 id="2-6-Referer-based-access-control"><a href="#2-6-Referer-based-access-control" class="headerlink" title="2.6 Referer-based access control"></a>2.6 Referer-based access control</h2><p>某些网站基于HTTP请求中提交的Referer头进行访问控制。浏览器可向请求添加Referer头，以指示发起请求的来源页面。<br>例如，某应用程序对主管理页面&#x2F;admin实施严格访问控制，但对子页面（如&#x2F;admin&#x2F;deleteUser）仅检查Referer头。若Referer头包含主&#x2F;admin网址，则允许请求通过。<br>此时攻击者可完全操控Referer头部。这意味着他们能通过伪造所需的Referer头部，直接向敏感子页面发起请求并获得未经授权的访问权限。</p>
+<h2 id="2-7-Location-based-access-control"><a href="#2-7-Location-based-access-control" class="headerlink" title="2.7 Location-based access control"></a>2.7 Location-based access control</h2><p>某些网站会根据用户的地理位置实施访问控制。例如，银行应用程序或媒体服务可能因适用国家法规或商业限制而采用此类措施。用户通常可通过使用网络代理、VPN或操纵客户端地理位置机制来规避这些访问限制。</p>
+<h1 id="3-如何防止访问控制漏洞"><a href="#3-如何防止访问控制漏洞" class="headerlink" title="3.如何防止访问控制漏洞"></a>3.如何防止访问控制漏洞</h1><p>可以通过采取深度防御方法和应用以下原则来防止访问控制漏洞：</p>
+<p>• 切勿仅依赖混淆来实施访问控制。</p>
+<p>• 除非资源旨在公开访问，否则应默认拒绝访问。</p>
+<p>• 在可能的情况下，使用单一的应用范围机制来实施访问控制。</p>
+<p>• 在代码级别，强制要求开发人员声明允许对每个资源进行的访问，并默认拒绝访问。</p>
+<p>• 彻底审核和测试访问控制，以确保其按设计工作。</p>
+<p>‍</p>
+<h1 id="LAB"><a href="#LAB" class="headerlink" title="LAB"></a>LAB</h1><h2 id="Lab-User-ID-controlled-by-request-parameter-with-unpredictable-user-IDs"><a href="#Lab-User-ID-controlled-by-request-parameter-with-unpredictable-user-IDs" class="headerlink" title="Lab: User ID controlled by request parameter, with unpredictable user IDs"></a>Lab: User ID controlled by request parameter, with unpredictable user IDs</h2><ol>
+<li>Find a blog post by <code>carlos</code>.</li>
+<li>Click on <code>carlos</code> and observe that the URL contains his user ID. Make a note of this ID.</li>
+<li>Log in using the supplied credentials and access your account page.</li>
+<li>Change the “id” parameter to the saved user ID.</li>
+<li>Retrieve and submit the API key.</li>
+</ol>
+<p><img src="/images/image-20251126221845-711g55i.png" alt="image"></p>
+<p><img src="/images/image-20251126221848-m2g3v3u.png" alt="image"></p>
+<p><img src="/images/image-20251126221917-dkz9gkr.png" alt="image"></p>
+<h2 id="Lab-User-ID-controlled-by-request-parameter-with-data-leakage-in-redirect"><a href="#Lab-User-ID-controlled-by-request-parameter-with-data-leakage-in-redirect" class="headerlink" title="Lab: User ID controlled by request parameter with data leakage in redirect"></a>Lab: User ID controlled by request parameter with data leakage in redirect</h2><p><img src="/images/image-20251126222021-idk89kb.png" alt="image"></p>
+<p>使用提供的凭据登录并访问您的帐户页面。2. 发送请求到打嗝中继器。将“id”参数更改为carlos。4. 注意，尽管响应现在将您重定向到主页，但它有一个包含属于carlos的API密钥的主体。5. 提交API密钥。</p>
+<h2 id="-1"><a href="#-1" class="headerlink" title=""></a></h2><h1 id="-2"><a href="#-2" class="headerlink" title=""></a></h1>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2026/02/02/Access%20control%20vulnerabilities%20and%20privilege%20escalation/" data-id="cml4mld0t00009gvs99z4awdg" data-title="7.Access control vulnerabilities and privilege escalation" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-Information disclosure" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2026/01/25/Information%20disclosure/" class="article-date">
@@ -1457,7 +1614,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/01/">January 2026</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/02/">February 2026</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/01/">January 2026</a></li></ul>
     </div>
   </div>
 
@@ -1468,6 +1625,10 @@
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2026/02/02/Access%20control%20vulnerabilities%20and%20privilege%20escalation/">7.Access control vulnerabilities and privilege escalation</a>
+          </li>
         
           <li>
             <a href="/2026/01/25/Information%20disclosure/">6.Information disclosure</a>
@@ -1483,10 +1644,6 @@
         
           <li>
             <a href="/2026/01/19/Server-side%20request%20forgery%20(SSRF)/">3.Server-side request forgery (SSRF)</a>
-          </li>
-        
-          <li>
-            <a href="/2026/01/12/Authentication%E8%BA%AB%E4%BB%BD%E9%AA%8C%E8%AF%81/">2.Authentication身份验证</a>
           </li>
         
       </ul>
